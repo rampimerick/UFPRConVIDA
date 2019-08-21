@@ -11,6 +11,10 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="ufpr_convida"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+                   android:value="AIzaSyDExnKlMmmFCZMh1okr26-JFz1anYRr9HE"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -22,10 +26,8 @@
                  until Flutter renders its first frame. It can be removed if
                  there is no splash screen (such as the default splash screen
                  defined in @style/LaunchTheme). -->
-            <meta-data
-                    android:name="com.google.android.geo.AIzaSyAWenMNrvu0eB27B4MVZ6d3ruoCMJLcKzA"
-                    android:value="AIzaSyAWenMNrvu0eB27B4MVZ6d3ruoCMJLcKzA"/>
-            <meta-data
+
+           <meta-data
                     android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
                     android:value="true"/>
 
