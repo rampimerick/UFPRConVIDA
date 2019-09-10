@@ -12,6 +12,9 @@ class telaMapa extends StatefulWidget {
 }
 
 class _telaMapaState extends State<telaMapa> {
+
+  //Implementa a API do google, ao final do codigo temos um marker da UFPR
+
   Completer<GoogleMapController> _controller = Completer();
 
   @override
@@ -33,6 +36,7 @@ class _telaMapaState extends State<telaMapa> {
           .of(context)
           .size
           .width,
+      //Configurações do mapa que será mostrado na tela ao carregar:
       child: GoogleMap(
         mapType: MapType.normal,
         initialCameraPosition:
@@ -45,8 +49,10 @@ class _telaMapaState extends State<telaMapa> {
     );
   }
 }
+  //Marker do politecnico baseado no MAPS, Lat/Long foram pegas na "mão"
+  //Pesquisando no proprio maps a localização do Politecnico
 
-  Marker politecnicoMarker = Marker(
+   Marker politecnicoMarker = Marker(
       markerId: MarkerId("politecnico1"),
       position: LatLng(-25.4555137, -49.2361375),
       infoWindow: InfoWindow(title: "UFPR Centro Politecnico"),

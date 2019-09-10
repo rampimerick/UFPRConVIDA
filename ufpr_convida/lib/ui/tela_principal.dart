@@ -18,6 +18,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
   int _indexAtual = 0;
 
   @override
+  //Switch para trocar as telas, é chamado nos métodos que estão abaixo do código principal
   Widget _chamaPagina(int index) {
     switch (index) {
       case 0:
@@ -36,12 +37,15 @@ class _telaPrincipalState extends State<telaPrincipal> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        //No título terá o nome do Usurio que ele poderá definir
         title: Text("Bem vindo 'Fulano de Tal'"),
         //Estou usando Theme por isso não precisa declarar cores
         //Theme esta na Main.dart
         //backgroundColor: Colors.blueAccent,
       ),
+      //Drawer é a barra de ferramentas que aparece ao lado
       drawer: new Drawer(
+        //Cada filho é uma opação que ao ser clicado puxará outra tela
         child: ListView(
           children: <Widget>[
             new UserAccountsDrawerHeader(
@@ -62,7 +66,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
             ),
             new ListTile(
               title: Text("Configurações"),
-              trailing: Icon(Icons.filter_vintage),
+              trailing: Icon(Icons.settings),
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pushNamed("/config");
@@ -74,6 +78,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
               onTap: () => Navigator.of(context).pop(),
             ),
             new Divider(),
+            //O Fechar somente fecha a barra de ferramentas
             new ListTile(
               title: Text("Fechar"),
               trailing: Icon(Icons.close),
