@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ufpr_convida/ui/tela_configuracoes.dart';
+import 'package:http/http.dart' as http;
+
+
 
 class telaMapa extends StatefulWidget {
   @override
@@ -95,4 +99,16 @@ Future _abrirTela(BuildContext context) async {
       .push(new MaterialPageRoute<Map>(builder: (BuildContext context) {
     return new telaConfig();
   }));
+}
+
+Future<Map> getEvent() async {
+  String apiUrl = "http://localhost:8080/events";
+  http.Response response = await http.get(apiUrl);
+  if (response.statusCode == 200){
+    List print1 =  json.decode(response.body);
+    print(print1);
+    
+  }else{
+    throw Exception("Falhou!");
+  }
 }
