@@ -17,17 +17,16 @@ class _telaEventosState extends State<telaEventos> {
   //Tela onde terá a lista de todos os eventos que o usuario decidir criar/participar
   //Os eventos que nao estão listados podem ser vistos no mapa e ao clicar tem a opção de participar
   Widget build(BuildContext context) {
-    return new Center(
-      child: Scaffold(
+    return Scaffold(
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blueAccent,
-          child: ListTile(
-            title: Icon(Icons.add),
-          ),
+          materialTapTargetSize: MaterialTapTargetSize.padded,
+          backgroundColor: Color(0xFF8A275D),
+          child: Icon(Icons.add, size: 36.0),
           onPressed: _criarEvento,
-        ),
-      ),
-    );
+          ),
+
+        );
+
   }
 
   void _criarEvento() {

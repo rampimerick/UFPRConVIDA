@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ufpr_convida/ui/tela_configuracoes.dart';
 import 'package:http/http.dart' as http;
+import 'package:ufpr_convida/ui/tela_eventos.dart';
+import 'package:ufpr_convida/ui/tela_novo_evento.dart';
 
 
 
@@ -88,7 +90,7 @@ Marker politecnicoMarker = Marker(
 //http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=xxx|9550FC|846098&.png
 Widget addButton(BuildContext context,IconData icon) {
   return FloatingActionButton(
-    onPressed:() => _abrirTela(context),
+    onPressed:() => _abrirTela(context),//getEvent(),
     materialTapTargetSize: MaterialTapTargetSize.padded,
     backgroundColor: Color(0xFF8A275D),
     child: Icon(icon, size: 36.0),
@@ -97,18 +99,7 @@ Widget addButton(BuildContext context,IconData icon) {
 Future _abrirTela(BuildContext context) async {
   Map resultado = await Navigator.of(context)
       .push(new MaterialPageRoute<Map>(builder: (BuildContext context) {
-    return new telaConfig();
+    return new telaNovoEvento();
   }));
 }
 
-Future<Map> getEvent() async {
-  String apiUrl = "http://localhost:8080/events";
-  http.Response response = await http.get(apiUrl);
-  if (response.statusCode == 200){
-    List print1 =  json.decode(response.body);
-    print(print1);
-    
-  }else{
-    throw Exception("Falhou!");
-  }
-}
