@@ -119,9 +119,9 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
         ),
         body: Container(
           child:
-              //-----------------------
+          //-----------------------
               ListView(
-            //Talvez uma Row com "Dados:"
+              //Talvez uma Row com "Dados:"
 
             children: <Widget>[
               Padding(
@@ -253,6 +253,10 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                         padding: const EdgeInsets.fromLTRB(10,0,0,0),
                         child: FlatButton(
                           onPressed: () async {
+                            String test = _eventDataEndController.text;
+                            test = test.replaceAll("/","-");
+                            print(test);
+
                             Post newPost = new Post(
                               Id: "123",
                               name: _eventNameController.text,
