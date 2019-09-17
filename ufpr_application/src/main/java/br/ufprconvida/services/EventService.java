@@ -24,7 +24,7 @@ public class EventService{
 
     public Event findById(String id) throws ObjectNotFoundException {
         Optional <Event> event = repo.findById(id);
-        return event.orElseThrow(() -> new ObjectNotFoundException("não existe"));
+        return event.orElseThrow(() -> new ObjectNotFoundException("Este evento não existe em nossa base de dados"));
 
     }
 

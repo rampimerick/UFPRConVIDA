@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
@@ -23,9 +24,18 @@ public class Event implements Serializable{
     private Date end;
     private String link;
     private String type;
-    
+    private String sector;
+    private String bloc;
+    @DBRef
+    private Location local;
 
-    public Event(String Id, String name, String target, Date date_event, String desc, Date init, Date end, String link, String type) {
+   
+
+    public Event(){
+
+    }
+
+    public Event(String Id, String name, String target, Date date_event, String desc, Date init, Date end, String link, String type, String sector, String bloc) {
         this.Id = Id;
         this.name = name;
         this.target = target;
@@ -35,13 +45,10 @@ public class Event implements Serializable{
         this.end = end;
         this.link = link;
         this.type = type;
+        this.sector = sector;
+        this.bloc = bloc;
+        
     }
-
-
-    public Event() {
-    }
-
-
 
     public String getId() {
         return this.Id;
@@ -115,6 +122,22 @@ public class Event implements Serializable{
         this.type = type;
     }
 
+    public String getSector() {
+        return this.sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
+    }
+
+    public String getBloc() {
+        return this.bloc;
+    }
+
+    public void setBloc(String bloc) {
+        this.bloc = bloc;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -123,13 +146,15 @@ public class Event implements Serializable{
             return false;
         }
         Event event = (Event) o;
-        return Objects.equals(Id, event.Id) && Objects.equals(name, event.name) && Objects.equals(target, event.target) && Objects.equals(date_event, event.date_event) && Objects.equals(desc, event.desc) && Objects.equals(init, event.init) && Objects.equals(end, event.end) && Objects.equals(link, event.link) && Objects.equals(type, event.type);
+        return Objects.equals(Id, event.Id) && Objects.equals(name, event.name) && Objects.equals(target, event.target) && Objects.equals(date_event, event.date_event) && Objects.equals(desc, event.desc) && Objects.equals(init, event.init) && Objects.equals(end, event.end) && Objects.equals(link, event.link) && Objects.equals(type, event.type) && Objects.equals(sector, event.sector) && Objects.equals(bloc, event.bloc);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Id, name, target, date_event, desc, init, end, link, type);
+        return Objects.hash(Id, name, target, date_event, desc, init, end, link, type, sector, bloc);
     }
+
+    
 
     
 }
