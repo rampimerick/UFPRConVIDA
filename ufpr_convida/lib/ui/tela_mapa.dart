@@ -81,6 +81,7 @@ class _telaMapaState extends State<telaMapa> {
 //Pesquisando no proprio maps a localização do Politecnico
 
 Marker politecnicoMarker = Marker(
+  
   markerId: MarkerId("politecnico1"),
   position: LatLng(-25.4555137, -49.2361375),
   infoWindow: InfoWindow(title: "UFPR Centro Politecnico"),

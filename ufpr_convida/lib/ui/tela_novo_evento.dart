@@ -9,7 +9,7 @@ import 'package:flutter_masked_text/flutter_masked_text.dart';
 
 class Post {
 
-  final String Id;
+  //final String Id;
   final String name;
   final String target;
   final String date_event;
@@ -18,12 +18,14 @@ class Post {
   final String end;
   final String link;
   final String type;
+  final String setor;
+  final String bloco;
 
-  Post({this.Id, this.name, this.target, this.date_event, this.desc, this.init, this.end, this.link, this.type});
+  Post({this.name, this.target, this.date_event, this.desc, this.init, this.end, this.link, this.type, this.setor,this.bloco});
 
   factory Post.fromJson(Map<String, dynamic> json){
     return Post(
-        Id: json['Id'],
+        //Id: json['Id'],
         name: json['name'],
         target: json['target'],
         date_event: json['date_event'],
@@ -31,13 +33,17 @@ class Post {
         init: json['init'],
         end: json['end'],
         link: json['link'],
-        type: json['type']
+        type: json['type'],
+        setor: json['setor'],
+        bloco: json['bloco']
     );
   }
 
+
+
   Map toMap(){
     var map = new Map<String, dynamic> ();
-    map["Id"] = Id;
+    //map["Id"] = Id;
     map["name"] = name;
     map["target"] = target;
     map["date_event"] = date_event;
@@ -46,20 +52,24 @@ class Post {
     map["end"] = end;
     map["link"] = link;
     map["type"] = type;
-
+    map["setor"] = setor;
+    map["bloco"] = bloco;
     return map;
   }
 }
 
-Future <Post> createPost (String url, {Map body}) async {
-  return http.post(url, body: body).then((http.Response response){
+Future <Post> createPost (String url, {String body}/*Aqui tem que ter HEADERS?*/) async {
+  Map<String, String> mapHeaders = {"Accept": "application/json", "Content-Type": "application/json"};
+
+  return http.post(url, body: body, headers: mapHeaders).then((http.Response response){
 
     final int statusCode = response.statusCode;
     print(statusCode);
 
-    if (statusCode == 200){
-      return Post.fromJson(json.decode(response.body));
+    if ((statusCode == 200)||(statusCode == 201)){
+      return null;//Post.fromJson(json.decode(response.body));
     }
+
     else {
       throw new Exception("Error while fetching data");
     }
@@ -257,21 +267,27 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                             test = test.replaceAll("/","-");
                             print(test);
 
+                            _eventDataEndController.text = _eventDataEndController.text.replaceAll("/", "-");
+                            _eventDataEndController.text = _eventDataEndController.text.replaceAll("/", "-");
+                            _eventDataEndController.text = _eventDataEndController.text.replaceAll("/", "-");
                             Post newPost = new Post(
-                              Id: "123",
+                              //Id: "123",
                               name: _eventNameController.text,
                               target: _eventTargetController.text,
-                              date_event: _eventDataEndController.text,
+                              date_event: "2019-12-12",
                               desc: _eventDescController.text,
-                              init: _eventDataInitController.text,
-                              end: _eventDataEndController.text,
+                              init: "2019-12-12",
+                              end: "2019-12-12",
                               link: _eventLinkController.text,
-                              type: _eventTypeController.text
+                              type: _eventTypeController.text,
+                              setor: "SEPT",
+                              bloco: "A"
                             );
-                            print(newPost.toMap());
 
-                            Post p = await createPost("http://10.0.2.2:8080/events", body: newPost.toMap());
-                            print(p);
+                            String post1 = json.encode(newPost.toMap());
+                            print(post1);
+                            Post p = await createPost("http://10.0.2.2:8080/events", body: post1);
+                            //print(p);
                             },
                           color: Color(0xFF8A275D),
                           child: Text(
