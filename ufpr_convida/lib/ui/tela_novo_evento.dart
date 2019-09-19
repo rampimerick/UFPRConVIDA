@@ -251,7 +251,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0,0,10,0),
                         child: FlatButton(
-                          onPressed: () => print("Cancelar!"),
+                          onPressed: () => Navigator.of(context).pop(),
                           color: Color(0xFF295492),
                           child: Text(
                             "Cancelar",
