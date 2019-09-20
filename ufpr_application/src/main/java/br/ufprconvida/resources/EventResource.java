@@ -16,7 +16,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.ufprconvida.domain.Event;
 import br.ufprconvida.services.EventService;
-import br.ufprconvida.services.LocationService;
 import javassist.tools.rmi.ObjectNotFoundException;
 
 @RestController
@@ -25,8 +24,7 @@ public class EventResource {
 
     @Autowired
     private EventService service;
-    @Autowired
-    private LocationService lservice;
+  
 
     @GetMapping
     public ResponseEntity<List<Event>> findAll() {
@@ -48,6 +46,8 @@ public class EventResource {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
+
+    //fazer DTO 
 
 
 
