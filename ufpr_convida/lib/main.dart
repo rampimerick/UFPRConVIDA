@@ -35,7 +35,8 @@ void main() {
         //Define rotas para depois poder cominhar entrar as telas de forma facilitada
         routes: <String, WidgetBuilder>{
           "/perfil" : (BuildContext context) => new telaPerfil(),
-          "/config" : (BuildContext context) => new telaConfig()
+          "/config" : (BuildContext context) => new telaConfig(),
+          "/login"  : (BuildContext context) => new Home(),
         } ,
       )
   );

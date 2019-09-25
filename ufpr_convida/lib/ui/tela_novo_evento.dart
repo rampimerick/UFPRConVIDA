@@ -287,6 +287,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                             String post1 = json.encode(newPost.toMap());
                             print(post1);
                             Post p = await createPost("http://10.0.2.2:8080/events", body: post1);
+                            Navigator.of(context).pop();
                             //print(p);
                             },
                           color: Color(0xFF8A275D),

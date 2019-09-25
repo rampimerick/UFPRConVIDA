@@ -7,8 +7,11 @@ import 'package:ufpr_convida/ui/tela_configuracoes.dart';
 import 'package:http/http.dart' as http;
 import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_novo_evento.dart';
+import 'package:uuid/uuid.dart';
 
 
+Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+var randID = Uuid();
 
 class telaMapa extends StatefulWidget {
   @override
@@ -40,12 +43,20 @@ class _telaMapaState extends State<telaMapa> {
           children: <Widget>[
             GoogleMap(
               mapType: MapType.normal,
-              initialCameraPosition: CameraPosition(
-                  target: LatLng(-25.4560508, -49.2371759), zoom: 12),
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              compassEnabled: true,
+              initialCameraPosition: CameraPosition(target: LatLng(-25.4560508, -49.2371759), zoom: 12),
               onMapCreated: (GoogleMapController controller) {
+
                 _controller.complete(controller);
+
+                },
+              onLongPress: (latlang) {
+                _addMarkerLongPressed(latlang);
               },
-              markers: {politecnicoMarker},
+              markers: Set<Marker>.of(markers.values)
+              //onLongPress: ,
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -76,6 +87,28 @@ class _telaMapaState extends State<telaMapa> {
             ),
           ],
         ));
+  }
+
+Future _addMarkerLongPressed(latlang) async {
+    _abrirTela(context);
+    setState(() {
+      var id = randID.v1();
+      //print(id);
+      final MarkerId markerId = MarkerId("$id");
+      Marker marker = Marker(
+        markerId: markerId,
+        draggable: true,
+        position: latlang,
+        infoWindow: InfoWindow(
+          title: "Novo Marker",
+          snippet: "Seu marker foi criado!"),
+        icon: BitmapDescriptor.defaultMarker
+        );
+        markers[markerId] = marker;
+    });
+
+    GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newLatLngZoom(latlang, 20.0));
   }
 }
 //Marker do politecnico baseado no MAPS, Lat/Long foram pegas na "mão"

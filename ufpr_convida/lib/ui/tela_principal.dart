@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ufpr_convida/ui/tela_configuracoes.dart';
 import 'package:ufpr_convida/ui/tela_eventos.dart';
@@ -76,7 +77,10 @@ class _telaPrincipalState extends State<telaPrincipal> {
             new ListTile(
               title: Text("Logout"),
               trailing: Icon(Icons.chevron_left),
-              onTap: () => Navigator.of(context).pop(),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed("/login");
+              }
             ),
             new Divider(),
             //O Fechar somente fecha a barra de ferramentas
