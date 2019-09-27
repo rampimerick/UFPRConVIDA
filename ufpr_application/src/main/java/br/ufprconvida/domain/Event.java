@@ -26,29 +26,28 @@ public class Event implements Serializable{
     private String type;
     private String sector;
     private String bloc;
-    @DBRef
-    private Location local;
+    private String location;
 
+  
+
+   
+    //a partir da
+
+
+    public String getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    
    
 
     public Event(){
 
     }
 
-    public Event(String Id, String name, String target, Date date_event, String desc, Date init, Date end, String link, String type, String sector, String bloc) {
-        this.Id = Id;
-        this.name = name;
-        this.target = target;
-        this.date_event = date_event;
-        this.desc = desc;
-        this.init = init;
-        this.end = end;
-        this.link = link;
-        this.type = type;
-        this.sector = sector;
-        this.bloc = bloc;
-        
-    }
 
     public String getId() {
         return this.Id;
