@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:async' as prefix0;
 import 'dart:convert';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:ufpr_convida/modelos/location.dart';
+import 'package:ufpr_convida/ui/tela_mapa.dart';
 
+var coord = null;
 
 class Post {
 
@@ -18,10 +22,12 @@ class Post {
   final String end;
   final String link;
   final String type;
-  final String setor;
-  final String bloco;
+  final String sector;
+  final String block;
+  final double lat;
+  final double lng;
 
-  Post({this.name, this.target, this.date_event, this.desc, this.init, this.end, this.link, this.type, this.setor,this.bloco});
+  Post({this.name, this.target, this.date_event, this.desc, this.init, this.end, this.link, this.type, this.sector,this.block, this.lat, this.lng});
 
   factory Post.fromJson(Map<String, dynamic> json){
     return Post(
@@ -34,27 +40,30 @@ class Post {
         end: json['end'],
         link: json['link'],
         type: json['type'],
-        setor: json['setor'],
-        bloco: json['bloco']
+        sector: json['sector'],
+        block: json['block'],
+        lat: json['lat'],
+        lng: json['lng']
     );
   }
 
 
 
-  Map toMap(){
-    var map = new Map<String, dynamic> ();
-    //map["Id"] = Id;
-    map["name"] = name;
-    map["target"] = target;
-    map["date_event"] = date_event;
-    map["desc"] = desc;
-    map["init"] = init;
-    map["end"] = end;
-    map["link"] = link;
-    map["type"] = type;
-    map["setor"] = setor;
-    map["bloco"] = bloco;
-    return map;
+  Map <String, dynamic> toMap(){
+    return {
+       "name": name,
+       "target": target,
+       "date_event": date_event,
+       "desc": desc,
+       "init": init,
+       "end": end,
+       "link": link,
+       "type": type,
+       "sector": sector,
+       "block": block,
+       "lat": lat,
+       "lng": lng
+    };
   }
 }
 
@@ -77,50 +86,42 @@ Future <Post> createPost (String url, {String body}/*Aqui tem que ter HEADERS?*/
   });
 
 }
-//
-//Future<List<dynamic>> getEvent() async {
-//  String apiUrl = "";
-//  var response = await http.post(
-//      Uri.encodeFull("http://10.0.2.2:8080/events"),
-//      headers: {"Accept": "application/json"}
-//  );
-//
-//  if (response.statusCode == 200) {
-//    var print1 = json.decode(response.body);
-//    print(print1);
-//  } else {
-//    throw Exception("Falhou!");
-//  }
-//}
-//
-//
-
-
 
 class telaNovoEvento extends StatefulWidget {
+  final Location locationObject;
+  telaNovoEvento({Key key, @required this.locationObject}) : super(key: key);
+
   @override
-  _telaNovoEventoState createState() => _telaNovoEventoState();
+  _telaNovoEventoState createState() => _telaNovoEventoState(locationObject);
 }
 
 class _telaNovoEventoState extends State<telaNovoEvento> {
-
+  Location location;
+  _telaNovoEventoState(this.location);
 
   @override
+
   //Controles:
   final TextEditingController _eventNameController =
-      new TextEditingController();
+    new TextEditingController();
   final TextEditingController _eventTargetController =
-      new TextEditingController();
-  final _eventDataController = new MaskedTextController(mask: '00/00/0000');
-  final TextEditingController _eventController = new TextEditingController();
+    new TextEditingController();
+  final TextEditingController _eventDateController =
+    new MaskedTextController(mask: '0000/00/00');
   final TextEditingController _eventDescController =
-      new TextEditingController();
-  final _eventDataInitController = new MaskedTextController(mask: '00/00/0000');
-  final _eventDataEndController = new MaskedTextController(mask: '00/00/0000');
+    new TextEditingController();
+  final TextEditingController _eventDateInitController =
+    new MaskedTextController(mask: '0000/00/00');
+  final TextEditingController _eventDateEndController =
+    new MaskedTextController(mask: '0000/00/00');
   final TextEditingController _eventLinkController =
-      new TextEditingController();
+    new TextEditingController();
   final TextEditingController _eventTypeController =
-      new TextEditingController();
+    new TextEditingController();
+  final TextEditingController _eventSectorController =
+    new TextEditingController();
+  final TextEditingController _eventBlockController =
+    new TextEditingController();
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,9 +130,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
         ),
         body: Container(
           child:
-          //-----------------------
               ListView(
-              //Talvez uma Row com "Dados:"
 
             children: <Widget>[
               Padding(
@@ -174,7 +173,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: TextField(
-                    controller: _eventDataController,
+                    controller: _eventDateController,
                     decoration: InputDecoration(
                       hintText: "Data o seu Evento:",
                       //border: OutlineInputBorder(
@@ -198,7 +197,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: TextField(
-                    controller: _eventDataInitController,
+                    controller: _eventDateInitController,
                     decoration: InputDecoration(
                       hintText: "Data Início Inscrições:",
                       //border: OutlineInputBorder(//  borderRadius:,
@@ -209,7 +208,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: TextField(
-                    controller: _eventDataEndController,
+                    controller: _eventDateEndController,
                     decoration: InputDecoration(
                       hintText: "Data Fim Inscrições:",
                       //border: OutlineInputBorder(
@@ -243,6 +242,33 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                     )),
               ),
               Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: TextField(
+                    controller: _eventSectorController,
+                    decoration: InputDecoration(
+                      hintText: "Caso for na UFPR: Informe o Setor",
+                      //border: OutlineInputBorder(
+                      //  borderRadius:,
+                      //),
+                      icon: Icon(Icons.import_contacts),
+                    )),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: TextField(
+                    controller: _eventBlockController,
+                    decoration: InputDecoration(
+                      hintText: "Caso for na UFPR: Informe o Bloco",
+                      //border: OutlineInputBorder(
+                      //  borderRadius:,
+                      //),
+                      icon: Icon(Icons.account_balance),
+                    )),
+              ),
+
+
+              Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Container(
                   child: Row(
@@ -263,32 +289,38 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                         padding: const EdgeInsets.fromLTRB(10,0,0,0),
                         child: FlatButton(
                           onPressed: () async {
-                            String test = _eventDataEndController.text;
-                            test = test.replaceAll("/","-");
-                            print(test);
 
-                            _eventDataEndController.text = _eventDataEndController.text.replaceAll("/", "-");
-                            _eventDataEndController.text = _eventDataEndController.text.replaceAll("/", "-");
-                            _eventDataEndController.text = _eventDataEndController.text.replaceAll("/", "-");
-                            Post newPost = new Post(
-                              //Id: "123",
-                              name: _eventNameController.text,
-                              target: _eventTargetController.text,
-                              date_event: "2019-12-12",
-                              desc: _eventDescController.text,
-                              init: "2019-12-12",
-                              end: "2019-12-12",
-                              link: _eventLinkController.text,
-                              type: _eventTypeController.text,
-                              setor: "SEPT",
-                              bloco: "A"
-                            );
 
-                            String post1 = json.encode(newPost.toMap());
-                            print(post1);
-                            Post p = await createPost("http://10.0.2.2:8080/events", body: post1);
-                            Navigator.of(context).pop();
-                            //print(p);
+                              String coords = location.coords.toString();
+
+                              String dateEvent = _eventDateController.text.replaceAll("/", "-");
+                              String dateInit = _eventDateInitController.text.replaceAll("/", "-");
+                              String dateEnd = _eventDateEndController.text.replaceAll("/", "-");
+                              print(dateEvent);
+
+
+                              Post newPost = new Post(
+                                //Id: "123",
+                                name: _eventNameController.text,
+                                target: _eventTargetController.text,
+                                date_event: dateEvent,
+                                desc: _eventDescController.text,
+                                init: dateInit,
+                                end: dateEnd,
+                                link: _eventLinkController.text,
+                                type: _eventTypeController.text,
+                                sector: _eventSectorController.text,
+                                block: _eventBlockController.text,
+                                lat: location.coords.latitude,
+                                lng: location.coords.longitude
+                              );
+
+                              String post1 = json.encode(newPost.toMap());
+                              print(post1);
+                              Post p = await createPost("http://10.0.2.2:8080/events", body: post1);
+                              Navigator.of(context).pop();
+                              telaMapa();
+
                             },
                           color: Color(0xFF8A275D),
                           child: Text(

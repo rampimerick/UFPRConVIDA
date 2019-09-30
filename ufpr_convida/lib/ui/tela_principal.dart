@@ -1,13 +1,17 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ufpr_convida/ui/tela_configuracoes.dart';
 import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_mapa.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 int _indexItem = 0;
+
+
 
 class telaPrincipal extends StatefulWidget {
   @override
@@ -17,10 +21,34 @@ class telaPrincipal extends StatefulWidget {
 class _telaPrincipalState extends State<telaPrincipal> {
   Completer<GoogleMapController> _controller = Completer();
   int _indexAtual = 0;
+  //AQUI
+  //final editKey = new GlobalKey<FormState>();
+
+  Future<List> getUser() async {
+    String apiUrl = "http://192.168.0.103:8080/users/20190000";
+    http.Response response = await http.get(apiUrl);
+    print("StatusCode:${response.statusCode}");
+
+    if ((response.statusCode != 200) && (response.statusCode != 201)) {
+      apiUrl = "http://10.0.2.2:8080/users/20190000";
+      print("Tentando com $apiUrl");
+      response = await http.get(apiUrl);
+    }
+    //Caso vir código 200, OK!
+    var jsonData;
+    if ((response.statusCode == 200) || (response.statusCode == 201)) {
+      jsonData = json.decode(response.body);
+    } else {
+      throw Exception("Falhou!");
+    }
+    //Printa o usuario que voltou
+    print(jsonData);
+  }
 
   @override
   //Switch para trocar as telas, é chamado nos métodos que estão abaixo do código principal
   Widget _chamaPagina(int index) {
+
     switch (index) {
       case 0:
         return telaMapa();
@@ -95,6 +123,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
 
       //Chama a pagina com o body do MAPA
       body: _chamaPagina(_indexAtual),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _indexAtual,
         onTap: (value) {
@@ -110,3 +139,4 @@ class _telaPrincipalState extends State<telaPrincipal> {
     );
   }
 }
+

@@ -28,7 +28,9 @@ class telaEventos extends StatefulWidget {
 
 class _telaEventosState extends State<telaEventos> {
   Future<List> getEvents() async {
-    String apiUrl = "http://192.168.0.103:8080/events";
+    String apiUrl = "http://10.0.2.2:8080/events";//"http://192.168.0.103:8080/events";
+    print("Requisição será feita:");
+
     http.Response response = await http.get(apiUrl);
     print("StatusCode:${response.statusCode}");
 
@@ -100,7 +102,7 @@ class _telaEventosState extends State<telaEventos> {
                                   radius: 42.0,
                                   backgroundColor: Color(0xFF8A275D),
                                   child: Text(
-                                    "19/09",
+                                    "30/09",
                                     style: TextStyle(
                                       color: Colors.white70,
                                       fontWeight: FontWeight.w900,
@@ -139,7 +141,7 @@ class DetailPage extends StatelessWidget {
 
     var f = new DateFormat.yMMMMd().add_Hm();
     var parsedDate = DateTime.parse(event.date_event);
-    print(parsedDate);
+
     String imagem;
     if (event.type.compareTo('Reuniao') == 0 ) {
        imagem = "assets/event-type-2.png";

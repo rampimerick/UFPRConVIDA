@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ufpr_convida/ui/home.dart';
 import 'package:ufpr_convida/ui/splash_screen.dart';
 import 'package:ufpr_convida/ui/tela_configuracoes.dart';
+import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'package:ufpr_convida/ui/tela_perfil.dart';
 
 void main() {
@@ -37,6 +38,8 @@ void main() {
           "/perfil" : (BuildContext context) => new telaPerfil(),
           "/config" : (BuildContext context) => new telaConfig(),
           "/login"  : (BuildContext context) => new Home(),
+          "/map"    : (BuildContext context) => new telaMapa(),
+
         } ,
       )
   );

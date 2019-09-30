@@ -26,28 +26,33 @@ public class Event implements Serializable{
     private String type;
     private String sector;
     private String bloc;
-    private String location;
+    private double lat;
+    private double lng;
 
   
-
    
     //a partir da
-
-
-    public String getLocation() {
-        return this.location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-    
-   
 
     public Event(){
 
     }
 
+
+    public double getLat() {
+        return this.lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+    
+    public double getLng() {
+        return this.lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
+    }
 
     public String getId() {
         return this.Id;
@@ -150,7 +155,7 @@ public class Event implements Serializable{
 
     @Override
     public int hashCode() {
-        return Objects.hash(Id, name, target, date_event, desc, init, end, link, type, sector, bloc);
+        return Objects.hash(Id, name, target, date_event, desc, init, end, link, type, sector, bloc, lat, lng);
     }
 
     
