@@ -34,7 +34,7 @@ class _telaMapaState extends State<telaMapa> {
 
   Completer<GoogleMapController> _controller = Completer();
   Future<List> getMarkers() async {
-    String apiUrl = "http://10.0.2.2:8080/events";//"http://192.168.0.103:8080/events";
+    String apiUrl = "http://192.168.43.170:8080/events";//"http://192.168.0.103:8080/events";
     print("Requisição será feita:");
 
     http.Response response = await http.get(apiUrl);
