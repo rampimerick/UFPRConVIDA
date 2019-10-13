@@ -6,13 +6,15 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:intl/intl.dart';
 import 'package:ufpr_convida/modelos/location.dart';
+import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_mapa.dart';
+import 'package:ufpr_convida/ui/tela_principal.dart';
 
 var coord = null;
 
 class Post {
-
   //final String Id;
   final String name;
   final String target;
@@ -27,9 +29,21 @@ class Post {
   final double lat;
   final double lng;
 
-  Post({this.name, this.target, this.date_event, this.desc, this.init, this.end, this.link, this.type, this.sector,this.block, this.lat, this.lng});
+  Post(
+      {this.name,
+      this.target,
+      this.date_event,
+      this.desc,
+      this.init,
+      this.end,
+      this.link,
+      this.type,
+      this.sector,
+      this.block,
+      this.lat,
+      this.lng});
 
-  factory Post.fromJson(Map<String, dynamic> json){
+  factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
         //Id: json['Id'],
         name: json['name'],
@@ -43,52 +57,51 @@ class Post {
         sector: json['sector'],
         block: json['block'],
         lat: json['lat'],
-        lng: json['lng']
-    );
+        lng: json['lng']);
   }
 
-
-
-  Map <String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-       "name": name,
-       "target": target,
-       "date_event": date_event,
-       "desc": desc,
-       "init": init,
-       "end": end,
-       "link": link,
-       "type": type,
-       "sector": sector,
-       "block": block,
-       "lat": lat,
-       "lng": lng
+      "name": name,
+      "target": target,
+      "date_event": date_event,
+      "desc": desc,
+      "init": init,
+      "end": end,
+      "link": link,
+      "type": type,
+      "sector": sector,
+      "block": block,
+      "lat": lat,
+      "lng": lng
     };
   }
 }
 
-Future <Post> createPost (String url, {String body}/*Aqui tem que ter HEADERS?*/) async {
-  Map<String, String> mapHeaders = {"Accept": "application/json", "Content-Type": "application/json"};
+Future<Post> createPost(String url, {String body}
+    /*Aqui tem que ter HEADERS?*/) async {
+  Map<String, String> mapHeaders = {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+  };
 
-  return http.post(url, body: body, headers: mapHeaders).then((http.Response response){
-
+  return http
+      .post(url, body: body, headers: mapHeaders)
+      .then((http.Response response) {
     final int statusCode = response.statusCode;
     print(statusCode);
 
-    if ((statusCode == 200)||(statusCode == 201)){
-      return null;//Post.fromJson(json.decode(response.body));
-    }
-
-    else {
+    if ((statusCode == 200) || (statusCode == 201)) {
+      return null; //Post.fromJson(json.decode(response.body));
+    } else {
       throw new Exception("Error while fetching data");
     }
-
   });
-
 }
 
 class telaNovoEvento extends StatefulWidget {
   final Location locationObject;
+
   telaNovoEvento({Key key, @required this.locationObject}) : super(key: key);
 
   @override
@@ -97,31 +110,33 @@ class telaNovoEvento extends StatefulWidget {
 
 class _telaNovoEventoState extends State<telaNovoEvento> {
   Location location;
+  final DateFormat dateFormat = DateFormat ("yyyy-MM-dd HH:mm");
+  DateTime selectedDate = DateTime.now();
+
   _telaNovoEventoState(this.location);
 
   @override
-
   //Controles:
   final TextEditingController _eventNameController =
-    new TextEditingController();
+      new TextEditingController();
   final TextEditingController _eventTargetController =
-    new TextEditingController();
+      new TextEditingController();
   final TextEditingController _eventDateController =
-    new MaskedTextController(mask: '0000/00/00');
+      new MaskedTextController(mask: '0000/00/00');
   final TextEditingController _eventDescController =
-    new TextEditingController();
+      new TextEditingController();
   final TextEditingController _eventDateInitController =
-    new MaskedTextController(mask: '0000/00/00');
+      new MaskedTextController(mask: '0000/00/00');
   final TextEditingController _eventDateEndController =
-    new MaskedTextController(mask: '0000/00/00');
+      new MaskedTextController(mask: '0000/00/00');
   final TextEditingController _eventLinkController =
-    new TextEditingController();
+      new TextEditingController();
   final TextEditingController _eventTypeController =
-    new TextEditingController();
+      new TextEditingController();
   final TextEditingController _eventSectorController =
-    new TextEditingController();
+      new TextEditingController();
   final TextEditingController _eventBlockController =
-    new TextEditingController();
+      new TextEditingController();
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,9 +144,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
           title: Text("Seu novo Evento"),
         ),
         body: Container(
-          child:
-              ListView(
-
+          child: ListView(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(10),
@@ -172,15 +185,35 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
               ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: TextField(
-                    controller: _eventDateController,
-                    decoration: InputDecoration(
-                      hintText: "Data o seu Evento:",
-                      //border: OutlineInputBorder(
-                      //  borderRadius:,
-                      //),
-                      icon: Icon(Icons.event),
-                    )),
+                child:Column(
+                  children: <Widget>[      
+                    RaisedButton(
+                      child: Text("Data e Hora do Evento"),
+                      onPressed: () async {
+                        final selectedDate = await _selectedDateTime(context);
+                        if (selectedDate == null ) return 0;
+                        print(selectedDate);
+                        final selectedTime = await _selectedTime(context);
+                        if (selectedDate == null) return 0;
+                        print(selectedTime);
+
+                        setState(() {
+                          this.selectedDate = DateTime(
+                            selectedDate.year,
+                            selectedDate.month,
+                            selectedDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute
+                          );
+                        print(this.selectedDate);
+                        });
+                        return 0;
+                      },
+                    ),
+                    Text(dateFormat.format(selectedDate))
+
+                  ],
+                )
               ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
@@ -253,7 +286,6 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                       icon: Icon(Icons.import_contacts),
                     )),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: TextField(
@@ -266,8 +298,6 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                       icon: Icon(Icons.account_balance),
                     )),
               ),
-
-
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Container(
@@ -275,31 +305,32 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(0,0,10,0),
+                        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                         child: FlatButton(
                           onPressed: () => Navigator.of(context).pop(),
                           color: Color(0xFF295492),
                           child: Text(
                             "Cancelar",
-                            style: TextStyle(color: Colors.white, fontSize: 17.0),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 17.0),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(10,0,0,0),
+                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                         child: FlatButton(
                           onPressed: () async {
+                            String coords = location.coords.toString();
 
+                            String dateEvent =
+                                _eventDateController.text.replaceAll("/", "-");
+                            String dateInit = _eventDateInitController.text
+                                .replaceAll("/", "-");
+                            String dateEnd = _eventDateEndController.text
+                                .replaceAll("/", "-");
+                            print(dateEvent);
 
-                              String coords = location.coords.toString();
-
-                              String dateEvent = _eventDateController.text.replaceAll("/", "-");
-                              String dateInit = _eventDateInitController.text.replaceAll("/", "-");
-                              String dateEnd = _eventDateEndController.text.replaceAll("/", "-");
-                              print(dateEvent);
-
-
-                              Post newPost = new Post(
+                            Post newPost = new Post(
                                 //Id: "123",
                                 name: _eventNameController.text,
                                 target: _eventTargetController.text,
@@ -312,20 +343,25 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                                 sector: _eventSectorController.text,
                                 block: _eventBlockController.text,
                                 lat: location.coords.latitude,
-                                lng: location.coords.longitude
-                              );
+                                lng: location.coords.longitude);
 
-                              String post1 = json.encode(newPost.toMap());
-                              print(post1);
-                              Post p = await createPost("http://192.168.43.170:8080/events", body: post1);
-                              Navigator.of(context).pop();
-                              telaMapa();
-
-                            },
+                            String post1 = json.encode(newPost.toMap());
+                            print(post1);
+                            Post p = await createPost(
+                                "http://10.0.2.2:8080/events",
+                                body: post1);
+                            Navigator.of(context).push(new MaterialPageRoute(
+                                builder: (BuildContext context) {
+                              return new telaPrincipal();
+                            }));
+                            //Navigator.pop(context, () {setState(() {});});
+                            //telaMapa();
+                          },
                           color: Color(0xFF8A275D),
                           child: Text(
                             "Criar",
-                            style: TextStyle(color: Colors.white, fontSize: 17.0),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 17.0),
                           ),
                         ),
                       ),
@@ -338,4 +374,19 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
           // ------------------------
         ));
   }
+
+  Future <TimeOfDay> _selectedTime(BuildContext context) {
+    final now = DateTime.now();
+    
+    return showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
+    );
+  }
+
+  Future<DateTime> _selectedDateTime(BuildContext context) => showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(Duration(seconds: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100));
 }

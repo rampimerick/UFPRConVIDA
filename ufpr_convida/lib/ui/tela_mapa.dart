@@ -34,7 +34,7 @@ class _telaMapaState extends State<telaMapa> {
 
   Completer<GoogleMapController> _controller = Completer();
   Future<List> getMarkers() async {
-    String apiUrl = "http://192.168.43.170:8080/events";//"http://192.168.0.103:8080/events";
+    String apiUrl = "http://10.0.2.2:8080/events";//"http://192.168.0.103:8080/events";
     print("Requisição será feita:");
 
     http.Response response = await http.get(apiUrl);
@@ -118,15 +118,16 @@ class _telaMapaState extends State<telaMapa> {
                 markers: Set<Marker>.of(markers.values)
               //onLongPress: ,
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  child: addButton(context, Icons.add),
-                ),
-              ),
-            ),
+//        Botão de Adicionar, TROCAR PARA VISÂO DE SATÉLITE
+//            Padding(
+//              padding: const EdgeInsets.all(16.0),
+//              child: Align(
+//                alignment: Alignment.bottomRight,
+//                child: Container(
+//                  child: addButton(context, Icons.add),
+//                ),
+//              ),
+//            ),
             Container(
               color: Colors.white,
               child: Padding(

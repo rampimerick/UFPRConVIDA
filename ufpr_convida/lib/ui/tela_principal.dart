@@ -8,10 +8,10 @@ import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-int _indexItem = 0;
-
-
+//
+//int _indexItem = 0;
+//
+//
 
 class telaPrincipal extends StatefulWidget {
   @override
