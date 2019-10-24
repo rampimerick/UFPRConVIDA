@@ -161,9 +161,8 @@ class _telaMapaState extends State<telaMapa> {
     );
 
     GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newLatLngZoom(latlang, 20.0));
+    controller.animateCamera(CameraUpdate.newLatLngZoom(latlang, 12.0));
   }
-
 
 }
 //Marker do politecnico baseado no MAPS, Lat/Long foram pegas na "mão"

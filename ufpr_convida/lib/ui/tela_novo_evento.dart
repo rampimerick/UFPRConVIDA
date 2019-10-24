@@ -13,6 +13,9 @@ import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
 
 var coord = null;
+String dateEvent;
+String dateInit;
+String dateEnd;
 
 class Post {
   //final String Id;
@@ -110,8 +113,15 @@ class telaNovoEvento extends StatefulWidget {
 
 class _telaNovoEventoState extends State<telaNovoEvento> {
   Location location;
-  final DateFormat dateFormat = DateFormat ("yyyy-MM-dd HH:mm");
-  DateTime selectedDate = DateTime.now();
+
+  final DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm");
+  final DateFormat showDate = DateFormat("dd/MM/yyyy HH:mm");
+  String showDateEvent = "Informe a Data do Evento";
+  String showDateInit = "Informe o Inicio das Inscrições";
+  String showDateEnd = "Informe o Fim das Inscrições";
+  DateTime selectedDateEvent = DateTime.now();
+  DateTime selectedDateInit = DateTime.now();
+  DateTime selectedDateEnd = DateTime.now();
 
   _telaNovoEventoState(this.location);
 
@@ -140,9 +150,9 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Seu novo Evento"),
-        ),
+//        appBar: AppBar(
+//          title: Text("Seu novo Evento"),
+//        ),
         body: Container(
           child: ListView(
             children: <Widget>[
@@ -151,7 +161,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                 child: Container(
                   alignment: Alignment.center,
                   child: Text(
-                    "Informe os Dados",
+                    "Criando Novo Evento",
                     style: TextStyle(
                         color: Color(0xFF295492), //Color(0xFF8A275D),
                         fontSize: 32.0,
@@ -174,6 +184,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: TextField(
+
                     controller: _eventTargetController,
                     decoration: InputDecoration(
                       hintText: "Público Alvo:",
@@ -185,40 +196,9 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
               ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child:Column(
-                  children: <Widget>[      
-                    RaisedButton(
-                      child: Text("Data e Hora do Evento"),
-                      onPressed: () async {
-                        final selectedDate = await _selectedDateTime(context);
-                        if (selectedDate == null ) return 0;
-                        print(selectedDate);
-                        final selectedTime = await _selectedTime(context);
-                        if (selectedDate == null) return 0;
-                        print(selectedTime);
-
-                        setState(() {
-                          this.selectedDate = DateTime(
-                            selectedDate.year,
-                            selectedDate.month,
-                            selectedDate.day,
-                            selectedTime.hour,
-                            selectedTime.minute
-                          );
-                        print(this.selectedDate);
-                        });
-                        return 0;
-                      },
-                    ),
-                    Text(dateFormat.format(selectedDate))
-
-                  ],
-                )
-              ),
-              Padding(
-                padding: const EdgeInsets.all(5.0),
                 child: TextField(
                     controller: _eventDescController,
+                    maxLines: 2,
                     decoration: InputDecoration(
                       hintText: "Descrição:",
                       //border: OutlineInputBorder(
@@ -228,28 +208,211 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                     )),
               ),
               Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: TextField(
-                    controller: _eventDateInitController,
-                    decoration: InputDecoration(
-                      hintText: "Data Início Inscrições:",
-                      //border: OutlineInputBorder(//  borderRadius:,
-                      //),
-                      icon: Icon(Icons.event_available),
-                    )),
-              ),
+                  padding: const EdgeInsets.all(5.0),
+                  child: Row(
+                    children: <Widget>[
+
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(45.0, 8.0, 8.0, 8.0),
+                        child: Container(
+                          width: 242.0,
+                          height: 38.0,
+                          child: Center(
+                            child: Text(showDateEvent,
+                                style: TextStyle(
+                                color: Color(0xFF295492),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16.0
+                              ),),
+                          ),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Color(0xFF295492),
+                                  width: 3.0,
+                                  style: BorderStyle.solid
+                              ),
+                              borderRadius: BorderRadius.all(
+                               Radius.circular(6)
+                              ),
+
+
+                          ),
+
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RaisedButton(
+                          child: Icon(Icons.today),
+                          onPressed: () async {
+                            final selectedDate = await _selectedDateTime(context);
+                            if (selectedDate == null) return 0;
+
+                            final selectedTime = await _selectedTime(context);
+                            if (selectedDate == null) return 0;
+
+                            setState(() {
+                              this.selectedDateEvent = DateTime(
+                                selectedDate.year,
+                                selectedDate.month,
+                                selectedDate.day,
+                                selectedTime.hour,
+                                selectedTime.minute
+                              );
+                              dateEvent = selectedDate.toString();
+                              print("DateEvent String: $dateEvent");
+                              showDateEvent = showDate.format(selectedDate);
+                            });
+                            return 0;
+                          },
+
+                          padding: EdgeInsets.all(5),
+
+                        ),
+                      ),
+
+                    ],
+                  )),
+
+              //------------------------------------------------------------------------
               Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: TextField(
-                    controller: _eventDateEndController,
-                    decoration: InputDecoration(
-                      hintText: "Data Fim Inscrições:",
-                      //border: OutlineInputBorder(
-                      //  borderRadius:,
-                      //),
-                      icon: Icon(Icons.event_busy),
-                    )),
-              ),
+                  padding: const EdgeInsets.all(5.0),
+                  child: Row(
+                    children: <Widget>[
+
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(45.0, 8.0, 8.0, 8.0),
+                        child: Container(
+                          width: 242.0,
+                          height: 38.0,
+                          child: Center(
+                            child: Text(showDateInit,
+                              style: TextStyle(
+                                  color: Color(0xFF295492),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16.0
+                              ),),
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Color(0xFF295492),
+                                width: 3.0,
+                                style: BorderStyle.solid
+                            ),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(6)
+                            ),
+
+
+                          ),
+
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RaisedButton(
+                          child: Icon(Icons.today),
+                          onPressed: () async {
+                            final selectedDate = await _selectedDateTime(context);
+                            if (selectedDate == null) return 0;
+
+                            final selectedTime = await _selectedTime(context);
+                            if (selectedDate == null) return 0;
+
+                            setState(() {
+                              this.selectedDateInit = DateTime(
+                                  selectedDate.year,
+                                  selectedDate.month,
+                                  selectedDate.day,
+                                  selectedTime.hour,
+                                  selectedTime.minute
+                              );
+                              dateEvent = selectedDate.toString();
+                              print("DateEvent String: $dateEvent");
+                              showDateInit = showDate.format(selectedDate);
+                            });
+                            return 0;
+                          },
+
+                          padding: EdgeInsets.all(5),
+
+                        ),
+                      ),
+
+                    ],
+                  )),
+
+
+              Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Row(
+                    children: <Widget>[
+
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(45.0, 8.0, 8.0, 8.0),
+                        child: Container(
+                          width: 242.0,
+                          height: 38.0,
+                          child: Center(
+                            child: Text(showDateEnd,
+                              style: TextStyle(
+                                  color: Color(0xFF295492),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16.0
+                              ),),
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Color(0xFF295492),
+                                width: 3.0,
+                                style: BorderStyle.solid
+                            ),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(6)
+                            ),
+
+
+                          ),
+
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RaisedButton(
+                          child: Icon(Icons.today),
+                          onPressed: () async {
+                            final selectedDate = await _selectedDateTime(context);
+                            if (selectedDate == null) return 0;
+
+                            final selectedTime = await _selectedTime(context);
+                            if (selectedDate == null) return 0;
+
+                            setState(() {
+                              this.selectedDateEnd = DateTime(
+                                  selectedDate.year,
+                                  selectedDate.month,
+                                  selectedDate.day,
+                                  selectedTime.hour,
+                                  selectedTime.minute
+                              );
+                              dateEvent = selectedDate.toString();
+                              print("DateEvent String: $dateEvent");
+                              showDateEnd = showDate.format(selectedDate);
+                            });
+                            return 0;
+                          },
+
+                          padding: EdgeInsets.all(5),
+
+                        ),
+                      ),
+
+                    ],
+                  )),
+              //------------------------------------------------------------------------
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: TextField(
@@ -307,7 +470,10 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                         child: FlatButton(
-                          onPressed: () => Navigator.of(context).pop(),
+                          onPressed: () => Navigator.of(context).push(new MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return new telaPrincipal();
+                            })),
                           color: Color(0xFF295492),
                           child: Text(
                             "Cancelar",
@@ -320,14 +486,19 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                         padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                         child: FlatButton(
                           onPressed: () async {
-                            String coords = location.coords.toString();
+                            DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+                            dateEvent = dateFormat.format(selectedDateEvent);
 
-                            String dateEvent =
-                                _eventDateController.text.replaceAll("/", "-");
-                            String dateInit = _eventDateInitController.text
+                            print("Data formatada: $dateEvent");
+
+                            String coords = location.coords.toString();
+                            _eventDateController.text.replaceAll("/", "-");
+
+                              dateInit = _eventDateInitController.text
                                 .replaceAll("/", "-");
-                            String dateEnd = _eventDateEndController.text
+                              dateEnd = _eventDateEndController.text
                                 .replaceAll("/", "-");
+
                             print(dateEvent);
 
                             Post newPost = new Post(
@@ -375,12 +546,12 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
         ));
   }
 
-  Future <TimeOfDay> _selectedTime(BuildContext context) {
+  Future<TimeOfDay> _selectedTime(BuildContext context) {
     final now = DateTime.now();
-    
+
     return showTimePicker(
-        context: context,
-        initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
+      context: context,
+      initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
     );
   }
 

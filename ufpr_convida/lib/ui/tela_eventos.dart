@@ -6,20 +6,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-
-class Event {
-  String name;
-  String target;
-  String date_event;
-  String desc;
-  String init;
-  String end;
-  String link;
-  String type;
-
-  Event(this.name, this.target, this.date_event, this.desc, this.init, this.end,
-      this.link, this.type);
-}
+import 'package:ufpr_convida/ui/alter_event_screen.dart';
+import 'package:ufpr_convida/ui/tela_principal.dart';
+import 'package:ufpr_convida/modelos/evento.dart';
 
 class telaEventos extends StatefulWidget {
   @override
@@ -28,7 +17,8 @@ class telaEventos extends StatefulWidget {
 
 class _telaEventosState extends State<telaEventos> {
   Future<List> getEvents() async {
-    String apiUrl = "http://10.0.2.2:8080/events";//"http://192.168.0.103:8080/events";
+    String apiUrl =
+        "http://10.0.2.2:8080/events"; //"http://192.168.0.103:8080/events";
     print("Requisição será feita:");
 
     http.Response response = await http.get(apiUrl);
@@ -48,12 +38,11 @@ class _telaEventosState extends State<telaEventos> {
       throw Exception("Falhou!");
     }
 
-
     List<Event> events = [];
 
     for (var e in jsonData) {
-      Event event = Event(e['name'], e["target"], e["date_event"], e["desc"],
-          e["init"], e["end"], e["link"], e["type"]);
+      Event event = Event(e['id'], e['name'], e["target"], e["date_event"],
+          e["desc"], e["init"], e["end"], e["link"], e["type"]);
       events.add(event);
     }
     return events;
@@ -76,7 +65,7 @@ class _telaEventosState extends State<telaEventos> {
             if (snapshot.data == null) {
               return CircularProgressIndicator();
             } else {
-              //Here we can build the List of Events:
+              //Contruímos a lista de eventos:
               return ListView.builder(
                   itemCount: values.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -143,16 +132,13 @@ class DetailPage extends StatelessWidget {
     var parsedDate = DateTime.parse(event.date_event);
 
     String imagem;
-    if (event.type.compareTo('Reuniao') == 0 ) {
-       imagem = "assets/event-type-2.png";
-    }
-    else if (event.type.compareTo('Festa') == 0 ){
+    if (event.type.compareTo('Reuniao') == 0) {
+      imagem = "assets/event-type-2.png";
+    } else if (event.type.compareTo('Festa') == 0) {
       imagem = "assets/event-type-1.png";
+    } else {
+      imagem = "assets/event-type-3.png";
     }
-    else {
-       imagem = "assets/event-type-3.png";
-    }
-
 
     return Scaffold(
       appBar: AppBar(title: Text("Evento: ${event.name}")),
@@ -160,15 +146,13 @@ class DetailPage extends StatelessWidget {
         //color: Colors.orange,
         child: Container(
           child: Stack(
-
             alignment: Alignment.topCenter,
             //mainAxisAlignment: MainAxisAlignment.center,
             //crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(child: Image.asset("$imagem")),
-
               Padding(
-                padding: EdgeInsets.only(top:250),
+                padding: EdgeInsets.only(top: 250),
                 child: Container(
                   height: 325.00,
                   width: 350.00,
@@ -256,12 +240,22 @@ class DetailPage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10.0),
                                   child: RaisedButton(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(24),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      //Ao pressionar Alterar:
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => alterEvent(
+                                              event: event,
+                                            ),
+                                          ));
+                                    },
                                     padding: EdgeInsets.all(12),
                                     //color: Colors.lightBlueAccent,
                                     child: Text('Alterar Evento',
@@ -269,12 +263,49 @@ class DetailPage extends StatelessWidget {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10.0),
                                   child: RaisedButton(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(24),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      //Ao pressionar Deletar:
+
+                                      var alert = AlertDialog(
+                                        title: Text(
+                                          "Deletar",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 18.0),
+                                        ),
+                                        content: Text(
+                                            "Deseja realmente deletar esse evento?"),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                              onPressed: () {
+                                                //Faz a requisição com o ID do evento
+                                                Navigator.of(context).push(
+                                                    new MaterialPageRoute(
+                                                        builder: (BuildContext
+                                                            context) {
+                                                  return new telaPrincipal();
+                                                }));
+                                              },
+                                              child: Text("Sim")),
+                                          FlatButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text("Não"))
+                                        ],
+                                      );
+
+                                      //Mostra a caixa de Alerta:
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => alert);
+                                    },
                                     padding: EdgeInsets.all(12),
                                     //color: Colors.lightBlueAccent,
                                     child: Text('Deletar Evento',

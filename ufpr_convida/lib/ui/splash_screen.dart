@@ -14,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Timer(Duration(seconds: 4), () => _abrirTela(context));
+    Timer(Duration(seconds: 2), () => _abrirTela(context));
   }
 
   @override

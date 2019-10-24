@@ -19,8 +19,9 @@ class telaPrincipal extends StatefulWidget {
 }
 
 class _telaPrincipalState extends State<telaPrincipal> {
-  Completer<GoogleMapController> _controller = Completer();
   int _indexAtual = 0;
+  Completer<GoogleMapController> _controller = Completer();
+
   //AQUI
   //final editKey = new GlobalKey<FormState>();
 

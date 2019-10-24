@@ -67,7 +67,7 @@ class _HomeState extends State<Home> {
                     ButtonBar(
                       alignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("Professor"),
+                        Text("Servidor"),
                         Radio(
                           value: 1,
                           groupValue: selectedRadio,
@@ -100,7 +100,7 @@ class _HomeState extends State<Home> {
                       child: TextField(
                         controller: _usuarioController,
                         decoration: InputDecoration(
-                            hintText: "GRR: ",
+                            hintText: "Email: ",
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(4.5)),
                             icon: Icon(Icons.person)),
