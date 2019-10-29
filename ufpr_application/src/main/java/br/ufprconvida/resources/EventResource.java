@@ -56,9 +56,9 @@ public class EventResource {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id ){
+    public ResponseEntity<Void> delete(@PathVariable String id ) throws ObjectNotFoundException {
         service.delete(id);
-        return ResponseEntity.  ok().build();
+        return ResponseEntity.noContent().build();
 
     }
 

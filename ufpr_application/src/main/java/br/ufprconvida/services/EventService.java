@@ -52,9 +52,9 @@ public class EventService{
         newObj.setType(event.getType());
     }
 
-    public void delete (String id){
-       
-        repo.delete(repo.findById(id).orElse(null));
+    public void delete (String id) throws ObjectNotFoundException {
+       findById(id);
+        repo.deleteById(id);
     }
 
 }
