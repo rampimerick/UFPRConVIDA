@@ -53,19 +53,13 @@ public class EventResource {
         event.setId(id);
         event = service.update(event);
         return ResponseEntity.noContent().build();
-
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id ){
         service.delete(id);
-        return ResponseEntity.ok().build();
-
+        return ResponseEntity.  ok().build();
 
     }
-
-   
-
-
 
 }
