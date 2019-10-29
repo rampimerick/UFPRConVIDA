@@ -5,8 +5,11 @@ import java.util.Date;
 import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+
+
+//LDAP
 
 
 @Document
@@ -31,7 +34,7 @@ public class Event implements Serializable{
 
   
    
-    //a partir da
+    
 
     public Event(){
 

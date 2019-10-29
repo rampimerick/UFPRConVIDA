@@ -29,4 +29,27 @@ public class UserService {
     }
 
 
+    public User insert(User user){
+        return repo.insert(user);
+
+    }
+
+    /*public User update(User user){
+        
+
+        User newObj = repo.findById(user.getGrr()).orElse(null);
+        updateData(newObj,user);
+        return repo.save(newObj);
+
+    }
+
+    private void updateData(User newObj, User user) {
+        newObj.setName(user.getName());
+        newObj.setLastName(user.getLastName());
+
+
+
+    }*/
+
+
 }

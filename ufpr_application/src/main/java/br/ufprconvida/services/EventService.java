@@ -32,5 +32,29 @@ public class EventService{
         return repo.insert(obj);
     }
 
+    public Event update(Event event){
+        Event newObj = repo.findById(event.getId()).orElse(null);
+        updateData(newObj, event);
+        return repo.save(newObj);
+        
+    }
+
+    public void updateData(Event newObj, Event event) {
+        newObj.setBloc(event.getBloc());
+        newObj.setDate_event(event.getDate_event());
+        newObj.setDesc(event.getDesc());
+        newObj.setEnd(event.getEnd());
+        newObj.setInit(event.getInit());
+        newObj.setLink(event.getLink());
+        newObj.setName(event.getName());
+        newObj.setSector(event.getSector());
+        newObj.setTarget(event.getTarget());
+        newObj.setType(event.getType());
+    }
+
+    public void delete (String id){
+       
+        repo.deleteById(id);
+    }
 
 }
