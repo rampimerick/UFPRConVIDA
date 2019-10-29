@@ -12,6 +12,10 @@ import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
 
+
+String urlCelular = "http://192.168.0.107:8080/events";
+String urlNotebook = "http://10.0.2.2:8080/events";
+
 var coord = null;
 String dateEvent;
 String dateInit;
@@ -114,7 +118,7 @@ class telaNovoEvento extends StatefulWidget {
 class _telaNovoEventoState extends State<telaNovoEvento> {
   Location location;
 
-  final DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+  final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss");
   final DateFormat showDate = DateFormat("dd/MM/yyyy HH:mm");
   String showDateEvent = "Informe a Data do Evento";
   String showDateInit = "Informe o Inicio das Inscrições";
@@ -494,20 +498,20 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                             ),
                             padding: EdgeInsets.all(12),
                             onPressed: () async {
-                              DateFormat dateFormat = DateFormat("yyyy-MM-dd");
-                              dateEvent = dateFormat.format(selectedDateEvent);
-
-                              print("Data formatada: $dateEvent");
-
-                              String coords = location.coords.toString();
-                              _eventDateController.text.replaceAll("/", "-");
-
-                                dateInit = _eventDateInitController.text
-                                  .replaceAll("/", "-");
-                                dateEnd = _eventDateEndController.text
-                                  .replaceAll("/", "-");
-
-                              print(dateEvent);
+//                              DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+//                              dateEvent = dateFormat.format(selectedDateEvent);
+//
+//                              print("Data formatada: $dateEvent");
+//
+//                              String coords = location.coords.toString();
+//                              _eventDateController.text.replaceAll("/", "-");
+//
+//                                dateInit = _eventDateInitController.text
+//                                  .replaceAll("/", "-");
+//                                dateEnd = _eventDateEndController.text
+//                                  .replaceAll("/", "-");
+//
+//                              print(dateEvent);
 
                               Post newPost = new Post(
                                   //Id: "123",
@@ -527,7 +531,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                               String post1 = json.encode(newPost.toMap());
                               print(post1);
                               Post p = await createPost(
-                                  "http://10.0.2.2:8080/events",
+                       /*>>>>*/   urlCelular,
                                   body: post1);
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (BuildContext context) {

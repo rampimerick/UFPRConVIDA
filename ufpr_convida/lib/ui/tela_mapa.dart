@@ -14,6 +14,8 @@ import 'package:uuid/uuid.dart';
 
 Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 var randID = Uuid();
+String urlCelular = "http://192.168.0.107:8080/events";
+String urlNotebook = "http://10.0.2.2:8080/events";
 
 class InfoMarker {
   String name;
@@ -40,17 +42,14 @@ class _telaMapaState extends State<telaMapa> {
   }
 
   Future<List> getMarkers(BuildContext context) async {
-    String apiUrl =
-        "http://10.0.2.2:8080/events"; //"http://192.168.0.103:8080/events";
-    print("Requisição será feita:");
 
-    http.Response response = await http.get(apiUrl);
+    http.Response response = await http.get(urlCelular);
     print("StatusCode:${response.statusCode}");
 
     if ((response.statusCode != 200) && (response.statusCode != 201)) {
-      apiUrl = "http://10.0.2.2:8080/events";
-      print("Tentando com $apiUrl");
-      response = await http.get(apiUrl);
+      String url = "http://10.0.2.2:8080/events";
+      print("Tentando com $url");
+      response = await http.get(url);
     }
 
     //Caso vir código 200, OK!

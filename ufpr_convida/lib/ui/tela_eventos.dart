@@ -13,6 +13,8 @@ import 'package:ufpr_convida/ui/alter_event_screen.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
 import 'package:ufpr_convida/modelos/evento.dart';
 
+String urlCelular = "http://192.168.0.107:8080/events";
+String urlNotebook = "http://10.0.2.2:8080/events";
 class telaEventos extends StatefulWidget {
   @override
   _telaEventosState createState() => _telaEventosState();
@@ -20,17 +22,14 @@ class telaEventos extends StatefulWidget {
 
 class _telaEventosState extends State<telaEventos> {
   Future<List> getEvents() async {
-    String apiUrl =
-        "http://10.0.2.2:8080/events"; //"http://192.168.0.103:8080/events";
-    print("Requisição será feita:");
 
-    http.Response response = await http.get(apiUrl);
+    http.Response response = await http.get(urlCelular);
     print("StatusCode:${response.statusCode}");
 
     if ((response.statusCode != 200) && (response.statusCode != 201)) {
-      apiUrl = "http://10.0.2.2:8080/events";
-      print("Tentando com $apiUrl");
-      response = await http.get(apiUrl);
+      String url = "http://10.0.2.2:8080/events";
+      print("Tentando com $url");
+      response = await http.get(url);
     }
 
     //Caso vir código 200, OK!
@@ -336,10 +335,8 @@ class DetailPage extends StatelessWidget {
   }
 
   Future deleteEvent() async {
-    
-
+    //TESTANDO DELETE -- Organizar depois
     String id = event.id;
-
     String url = "https://192.168.0.103:8080/events/$id";
     print("Deletando: $url");
     Response response = await http.delete(url);

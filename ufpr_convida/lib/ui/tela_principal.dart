@@ -10,6 +10,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'my_events_screen.dart';
 
+String urlCelular = "http://192.168.0.107:8080/events";
+String urlNotebook = "http://10.0.2.2:8080/events";
+
 class telaPrincipal extends StatefulWidget {
   @override
   _telaPrincipalState createState() => _telaPrincipalState();
@@ -18,27 +21,27 @@ class telaPrincipal extends StatefulWidget {
 class _telaPrincipalState extends State<telaPrincipal> {
   int _indexAtual = 0;
   Completer<GoogleMapController> _controller = Completer();
-
-  Future<List> getUser() async {
-    String apiUrl = "http://192.168.0.103:8080/users/20190000";
-    http.Response response = await http.get(apiUrl);
-    print("StatusCode:${response.statusCode}");
-
-    if ((response.statusCode != 200) && (response.statusCode != 201)) {
-      apiUrl = "http://10.0.2.2:8080/users/20190000";
-      print("Tentando com $apiUrl");
-      response = await http.get(apiUrl);
-    }
-    //Caso vir código 200, OK!
-    var jsonData;
-    if ((response.statusCode == 200) || (response.statusCode == 201)) {
-      jsonData = json.decode(response.body);
-    } else {
-      throw Exception("Falhou!");
-    }
-    //Printa o usuario que voltou
-    print(jsonData);
-  }
+//  GET USER
+//  Future<List> getUser() async {
+//    String apiUrl = "http://192.168.0.103:8080/users/20190000";
+//    http.Response response = await http.get(apiUrl);
+//    print("StatusCode:${response.statusCode}");
+//
+//    if ((response.statusCode != 200) && (response.statusCode != 201)) {
+//      apiUrl = "http://10.0.2.2:8080/users/20190000";
+//      print("Tentando com $apiUrl");
+//      response = await http.get(apiUrl);
+//    }
+//    //Caso vir código 200, OK!
+//    var jsonData;
+//    if ((response.statusCode == 200) || (response.statusCode == 201)) {
+//      jsonData = json.decode(response.body);
+//    } else {
+//      throw Exception("Falhou!");
+//    }
+//    //Printa o usuario que voltou
+//    print(jsonData);
+//  }
 
   @override
   //Switch para trocar as telas, é chamado nos métodos que estão abaixo do código principal
