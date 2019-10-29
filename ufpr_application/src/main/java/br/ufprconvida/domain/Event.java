@@ -160,8 +160,5 @@ public class Event implements Serializable{
     public int hashCode() {
         return Objects.hash(Id, name, target, date_event, desc, init, end, link, type, sector, bloc, lat, lng);
     }
-
-    
-
     
 }

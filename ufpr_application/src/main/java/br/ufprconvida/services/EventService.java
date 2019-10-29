@@ -53,7 +53,7 @@ public class EventService{
     }
 
     public void delete (String id) throws ObjectNotFoundException {
-       findById(id);
+        findById(id);
         repo.deleteById(id);
     }
 
