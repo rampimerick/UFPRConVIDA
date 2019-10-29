@@ -17,8 +17,10 @@ public class Event implements Serializable{
 
 
     private static final long serialVersionUID = 1L;
+    
     @Id
-    private String Id;
+    private String id;
+    
     private String name;
     private String target;
     private Date date_event;
@@ -33,8 +35,6 @@ public class Event implements Serializable{
     private double lng;
 
   
-   
-    
 
     public Event(){
 
@@ -58,11 +58,11 @@ public class Event implements Serializable{
     }
 
     public String getId() {
-        return this.Id;
+        return this.id;
     }
 
     public void setId(String Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 
     public String getName() {
@@ -153,12 +153,12 @@ public class Event implements Serializable{
             return false;
         }
         Event event = (Event) o;
-        return Objects.equals(Id, event.Id) && Objects.equals(name, event.name) && Objects.equals(target, event.target) && Objects.equals(date_event, event.date_event) && Objects.equals(desc, event.desc) && Objects.equals(init, event.init) && Objects.equals(end, event.end) && Objects.equals(link, event.link) && Objects.equals(type, event.type) && Objects.equals(sector, event.sector) && Objects.equals(bloc, event.bloc);
+        return Objects.equals(id, event.id) && Objects.equals(name, event.name) && Objects.equals(target, event.target) && Objects.equals(date_event, event.date_event) && Objects.equals(desc, event.desc) && Objects.equals(init, event.init) && Objects.equals(end, event.end) && Objects.equals(link, event.link) && Objects.equals(type, event.type) && Objects.equals(sector, event.sector) && Objects.equals(bloc, event.bloc);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Id, name, target, date_event, desc, init, end, link, type, sector, bloc, lat, lng);
+        return Objects.hash(id, name, target, date_event, desc, init, end, link, type, sector, bloc, lat, lng);
     }
     
 }

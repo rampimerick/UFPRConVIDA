@@ -2,6 +2,7 @@ package br.ufprconvida.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class EventResource {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<Event> findById(@PathVariable String id) throws ObjectNotFoundException {
         Event obj = service.findById(id);
         return ResponseEntity.ok().body(obj);
@@ -48,14 +49,14 @@ public class EventResource {
         return ResponseEntity.created(uri).build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping(value = "/update/{id}")
     public ResponseEntity<Void> update(@RequestBody Event event, @PathVariable String id){
         event.setId(id);
         event = service.update(event);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id ) throws ObjectNotFoundException {
         service.delete(id);
         return ResponseEntity.noContent().build();

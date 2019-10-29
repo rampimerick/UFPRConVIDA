@@ -7,6 +7,7 @@ import br.ufprconvida.domain.Event;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import br.ufprconvida.repository.EventRepository;
 import javassist.tools.rmi.ObjectNotFoundException;
@@ -53,7 +54,7 @@ public class EventService{
     }
 
     public void delete (String id) throws ObjectNotFoundException {
-        findById(id);
+    
         repo.deleteById(id);
     }
 
