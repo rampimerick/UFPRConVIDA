@@ -54,7 +54,7 @@ public class EventService{
 
     public void delete (String id){
        
-        repo.deleteById(id);
+        repo.delete(repo.findById(id).orElse(null));
     }
 
 }
