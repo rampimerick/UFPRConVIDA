@@ -35,141 +35,148 @@ class _HomeState extends State<Home> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      //Barra superior
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        //Barra superior
 //      appBar: AppBar(
 //        title: Text("UFPR ConVIDA"),
 //        backgroundColor: Colors.blueAccent,
 //        centerTitle: true,
 //      ),
 
-      //Corpo do aplicativo que ficará alternando
-      body: Container(
-        alignment: Alignment.topCenter,
-        color: Colors.white,
-        child: ListView(
-          children: <Widget>[
-            Image.asset(
-              //Imagem LOGO da UFPR
-              "assets/logo-ufprconvida-sembordas.png",
+        //Corpo do aplicativo que ficará alternando
+        body: Container(
+          alignment: Alignment.topCenter,
+          color: Colors.white,
+          child: ListView(
+            children: <Widget>[
+              Image.asset(
+                //Imagem LOGO da UFPR
+                "assets/logo-ufprconvida-sembordas.png",
 
-              width: 200.0,
-              height: 200.0,
-              //Possível mudança de cor
-              //color: Colors.white70,
-            ),
-            Container(
-                width: double.infinity,
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //Campos de entrada de dados
-                  children: <Widget>[
-                    ButtonBar(
-                      alignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("Servidor", style: TextStyle(fontSize: 16)),
-                        Radio(
-                          value: 1,
-                          groupValue: selectedRadio,
-                          onChanged: (val) {
-                            print("Radio: $val");
-                            SelectedRadio(val);
-                          },
-                          //activeColor: Colors.indigo,
-                        ),
-                        Text("Aluno", style: TextStyle(fontSize: 16)),
-                        Radio(
-                          value: 2,
-                          groupValue: selectedRadio,
-                          onChanged: (val) {
-                            print("Radio: $val");
-                            SelectedRadio(val);
-                          },
-                          //activeColor: Colors.indigo,
-                        ),
-                      ],
-                    ),
-                    //GRR --> Ex. GRR2018XXXX
-
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextField(
-                        controller: _usuarioController,
-                        decoration: InputDecoration(
-                            hintText: "Email: ",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(4.5)),
-                            icon: Icon(Icons.person)),
-                      ),
-                    ),
-                    //Senha ******
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: TextField(
-                        controller: _senhaController,
-                        decoration: InputDecoration(
-                            hintText: "Senha: ",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(4.5)),
-                            icon: Icon(Icons.lock)),
-                        //Para ocultar a senha:
-                        obscureText: true,
-                      ),
-                    ),
-
-                    Center(
-                      //Linha para os botões
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                width: 200.0,
+                height: 200.0,
+                //Possível mudança de cor
+                //color: Colors.white70,
+              ),
+              Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //Campos de entrada de dados
+                    children: <Widget>[
+                      ButtonBar(
+                        alignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          //Botao Entrar
-                          Container(
-                              margin: const EdgeInsets.all(4.5),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: RaisedButton(
-                                      color: Color(0xFF295492),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(24),
-                                      ),
-                                      onPressed: () => _logar(),
-                                      padding:
-                                          EdgeInsets.fromLTRB(60, 12, 60, 12),
-                                      child: Text('Entrar',
-                                          style: TextStyle(
-                                              color: Colors.white, fontSize: 18)),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: RaisedButton(
-                                      color: Color(0xFF8A275D),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(24),
-                                      ),
-                                      onPressed: () {
-                                        //Ao pressionar Cadastrar:
-                                      },
-                                      padding:
-                                          EdgeInsets.fromLTRB(43, 12, 43, 12),
-                                      child: Text('Cadastrar',
-                                          //Color(0xFF295492),(0xFF8A275D)
-                                          style: TextStyle(
-                                              color: Colors.white, fontSize: 18)),
-                                    ),
-                                  ),
-                                ],
-                              )),
+                          Text("Servidor", style: TextStyle(fontSize: 16)),
+                          Radio(
+                            value: 1,
+                            groupValue: selectedRadio,
+                            onChanged: (val) {
+                              print("Radio: $val");
+                              SelectedRadio(val);
+                            },
+                            //activeColor: Colors.indigo,
+                          ),
+                          Text("Aluno", style: TextStyle(fontSize: 16)),
+                          Radio(
+                            value: 2,
+                            groupValue: selectedRadio,
+                            onChanged: (val) {
+                              print("Radio: $val");
+                              SelectedRadio(val);
+                            },
+                            //activeColor: Colors.indigo,
+                          ),
                         ],
                       ),
-                    ),
-                  ],
-                ))
-          ],
+                      //GRR --> Ex. GRR2018XXXX
+
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                          controller: _usuarioController,
+                          decoration: InputDecoration(
+                              hintText: "Email: ",
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4.5)),
+                              icon: Icon(Icons.person)),
+                        ),
+                      ),
+                      //Senha ******
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                          controller: _senhaController,
+                          decoration: InputDecoration(
+                              hintText: "Senha: ",
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4.5)),
+                              icon: Icon(Icons.lock)),
+                          //Para ocultar a senha:
+                          obscureText: true,
+                        ),
+                      ),
+
+                      Center(
+                        //Linha para os botões
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            //Botao Entrar
+                            Container(
+                                margin: const EdgeInsets.all(4.5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: RaisedButton(
+                                        color: Color(0xFF295492),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(24),
+                                        ),
+                                        onPressed: () => _logar(),
+                                        padding:
+                                            EdgeInsets.fromLTRB(60, 12, 60, 12),
+                                        child: Text('Entrar',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18)),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: RaisedButton(
+                                        color: Color(0xFF8A275D),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(24),
+                                        ),
+                                        onPressed: () {
+                                          //Ao pressionar Cadastrar:
+                                        },
+                                        padding:
+                                            EdgeInsets.fromLTRB(43, 12, 43, 12),
+                                        child: Text('Cadastrar',
+                                            //Color(0xFF295492),(0xFF8A275D)
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18)),
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ))
+            ],
+          ),
         ),
       ),
     );

@@ -35,6 +35,10 @@ class _telaMapaState extends State<telaMapa> {
 
   Completer<GoogleMapController> _controller = Completer();
 
+  void _onMapCreated(GoogleMapController controller) {
+    _controller.complete(controller);
+  }
+
   Future<List> getMarkers(BuildContext context) async {
     String apiUrl =
         "http://10.0.2.2:8080/events"; //"http://192.168.0.103:8080/events";
@@ -118,8 +122,10 @@ class _telaMapaState extends State<telaMapa> {
               initialCameraPosition: CameraPosition(
                   target: LatLng(-25.4560508, -49.2371759), zoom: 12),
               onMapCreated: (GoogleMapController controller) async {
+
                 List<InfoMarker> mkrs = await getMarkers(context);
                 _controller.complete(controller);
+
               },
               onLongPress: (latlang) {
                 _addMarkerLongPressed(latlang);
@@ -186,7 +192,7 @@ class _telaMapaState extends State<telaMapa> {
 //);
 
 void _showSnackBar(String eventName, BuildContext context) {
-  print("Executou!");
+  print("Context:$context");
   Flushbar(
     message: "TESTE",
     mainButton: FlatButton(

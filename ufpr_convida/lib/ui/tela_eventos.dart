@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:ufpr_convida/ui/alter_event_screen.dart';
@@ -284,17 +287,19 @@ class DetailPage extends StatelessWidget {
                                             actions: <Widget>[
                                               FlatButton(
                                                   onPressed: () {
+                                                    deleteEvent();
                                                     //Faz a requisição com o ID do evento
-                                                    Navigator.of(context).push(
-                                                        new MaterialPageRoute(
-                                                            builder: (BuildContext
-                                                                context) {
-                                                      return new telaPrincipal();
-                                                    }));
+//                                                    Navigator.of(context).push(
+//                                                        new MaterialPageRoute(
+//                                                            builder: (BuildContext
+//                                                                context) {
+//                                                      return new telaPrincipal();
+//                                                    }));
                                                   },
                                                   child: Text("Sim")),
                                               FlatButton(
                                                   onPressed: () {
+
                                                     Navigator.pop(context);
                                                   },
                                                   child: Text("Não"))
@@ -328,5 +333,18 @@ class DetailPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future deleteEvent() async {
+    
+
+    String id = event.id;
+
+    String url = "https://192.168.0.103:8080/events/$id";
+    print("Deletando: $url");
+    Response response = await http.delete(url);
+    int statusCode = response.statusCode;
+    print("StatusCode:$statusCode");
+
   }
 }
