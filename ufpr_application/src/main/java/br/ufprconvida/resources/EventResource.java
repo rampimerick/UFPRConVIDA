@@ -48,14 +48,14 @@ public class EventResource {
         return ResponseEntity.created(uri).build();
     }
 
-    @PutMapping(value = "/update/{id}")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<Void> update(@RequestBody Event event, @PathVariable String id){
         event.setId(id);
         event = service.update(event);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "/delete/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id ) throws ObjectNotFoundException {
         service.delete(id);
         return ResponseEntity.noContent().build();
