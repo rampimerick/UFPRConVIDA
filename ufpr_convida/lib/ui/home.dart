@@ -13,16 +13,17 @@ class _HomeState extends State<Home> {
   final TextEditingController _senhaController = new TextEditingController();
 
   int selectedRadio;
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
     selectedRadio = 0;
   }
 
-  void SelectedRadio(int val){
-      setState(() {
-        selectedRadio = val;
-      });
+  void SelectedRadio(int val) {
+    setState(() {
+      selectedRadio = val;
+    });
   }
 
   //Método que puxa a tela principal quando tudo esta ok com o Login
@@ -67,21 +68,21 @@ class _HomeState extends State<Home> {
                     ButtonBar(
                       alignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("Servidor"),
+                        Text("Servidor", style: TextStyle(fontSize: 16)),
                         Radio(
                           value: 1,
                           groupValue: selectedRadio,
-                          onChanged: (val){
+                          onChanged: (val) {
                             print("Radio: $val");
                             SelectedRadio(val);
                           },
                           //activeColor: Colors.indigo,
                         ),
-                        Text("Aluno"),
+                        Text("Aluno", style: TextStyle(fontSize: 16)),
                         Radio(
                           value: 2,
                           groupValue: selectedRadio,
-                          onChanged: (val){
+                          onChanged: (val) {
                             print("Radio: $val");
                             SelectedRadio(val);
                           },
@@ -90,11 +91,7 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                     //GRR --> Ex. GRR2018XXXX
-                    Container(
-                      child: Row(
-                        children: <Widget>[],
-                      ),
-                    ),
+
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: TextField(
@@ -128,37 +125,45 @@ class _HomeState extends State<Home> {
                         children: <Widget>[
                           //Botao Entrar
                           Container(
-                            margin: const EdgeInsets.all(4.5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
-                                  child: FlatButton(
-                                    onPressed: _logar,
-                                    color: Color(0xFF295492),
-                                    child: Text(
-                                      "Entrar",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 17.0),
+                              margin: const EdgeInsets.all(4.5),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: RaisedButton(
+                                      color: Color(0xFF295492),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      onPressed: () => _logar(),
+                                      padding:
+                                          EdgeInsets.fromLTRB(60, 12, 60, 12),
+                                      child: Text('Entrar',
+                                          style: TextStyle(
+                                              color: Colors.white, fontSize: 18)),
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
-                                  child: FlatButton(
-                                    onPressed: _logar,
-                                    color: Color(0xFF8A275D),
-                                    child: Text(
-                                      "Cadastrar",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 17.0),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: RaisedButton(
+                                      color: Color(0xFF8A275D),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      onPressed: () {
+                                        //Ao pressionar Cadastrar:
+                                      },
+                                      padding:
+                                          EdgeInsets.fromLTRB(43, 12, 43, 12),
+                                      child: Text('Cadastrar',
+                                          //Color(0xFF295492),(0xFF8A275D)
+                                          style: TextStyle(
+                                              color: Colors.white, fontSize: 18)),
                                     ),
                                   ),
-                                ),
-                              ],
-                            )
-                          ),
+                                ],
+                              )),
                         ],
                       ),
                     ),

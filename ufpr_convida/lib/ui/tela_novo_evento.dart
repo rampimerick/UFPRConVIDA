@@ -114,7 +114,7 @@ class telaNovoEvento extends StatefulWidget {
 class _telaNovoEventoState extends State<telaNovoEvento> {
   Location location;
 
-  final DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm");
+  final DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
   final DateFormat showDate = DateFormat("dd/MM/yyyy HH:mm");
   String showDateEvent = "Informe a Data do Evento";
   String showDateInit = "Informe o Inicio das Inscrições";
@@ -234,10 +234,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                               borderRadius: BorderRadius.all(
                                Radius.circular(6)
                               ),
-
-
                           ),
-
                         ),
                       ),
 
@@ -260,13 +257,12 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                                 selectedTime.hour,
                                 selectedTime.minute
                               );
-                              dateEvent = selectedDate.toString();
-                              print("DateEvent String: $dateEvent");
-                              showDateEvent = showDate.format(selectedDate);
+                              dateEvent = dateFormat.format(selectedDateEvent);
+                              showDateEvent = showDate.format(selectedDateEvent);
+                              print("Formato data post: $dateEvent");
                             });
                             return 0;
                           },
-
                           padding: EdgeInsets.all(5),
 
                         ),
@@ -329,9 +325,9 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                                   selectedTime.hour,
                                   selectedTime.minute
                               );
-                              dateEvent = selectedDate.toString();
-                              print("DateEvent String: $dateEvent");
-                              showDateInit = showDate.format(selectedDate);
+                              dateInit = dateFormat.format(selectedDateInit);
+                              showDateInit = showDate.format(selectedDateInit);
+                              print("Formato data post: $dateInit");
                             });
                             return 0;
                           },
@@ -398,9 +394,9 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                                   selectedTime.hour,
                                   selectedTime.minute
                               );
-                              dateEvent = selectedDate.toString();
-                              print("DateEvent String: $dateEvent");
-                              showDateEnd = showDate.format(selectedDate);
+                              dateEnd = dateFormat.format(selectedDateEnd);
+                              showDateEnd = showDate.format(selectedDateEnd);
+                              print("Formato data post: $dateEnd");
                             });
                             return 0;
                           },
@@ -469,7 +465,12 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                        child: FlatButton(
+                        child: RaisedButton(
+                          shape:RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+
+                          ),
+                          padding: EdgeInsets.all(12),
                           onPressed: () => Navigator.of(context).push(new MaterialPageRoute(
                             builder: (BuildContext context) {
                               return new telaPrincipal();
@@ -484,7 +485,12 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        child: FlatButton(
+                        child: RaisedButton(
+                          shape:RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+
+                          ),
+                          padding: EdgeInsets.all(12),
                           onPressed: () async {
                             DateFormat dateFormat = DateFormat("yyyy-MM-dd");
                             dateEvent = dateFormat.format(selectedDateEvent);
@@ -548,7 +554,6 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
 
   Future<TimeOfDay> _selectedTime(BuildContext context) {
     final now = DateTime.now();
-
     return showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: now.hour, minute: now.minute),

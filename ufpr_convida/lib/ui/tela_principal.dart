@@ -8,10 +8,7 @@ import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-//
-//int _indexItem = 0;
-//
-//
+import 'my_events_screen.dart';
 
 class telaPrincipal extends StatefulWidget {
   @override
@@ -21,9 +18,6 @@ class telaPrincipal extends StatefulWidget {
 class _telaPrincipalState extends State<telaPrincipal> {
   int _indexAtual = 0;
   Completer<GoogleMapController> _controller = Completer();
-
-  //AQUI
-  //final editKey = new GlobalKey<FormState>();
 
   Future<List> getUser() async {
     String apiUrl = "http://192.168.0.103:8080/users/20190000";
@@ -56,8 +50,11 @@ class _telaPrincipalState extends State<telaPrincipal> {
         break;
 
       case 1:
-        List l;
-        return telaEventos();
+          return telaEventos();
+        break;
+
+        case 2:
+          return MyEventsScreen();
         break;
 
       default:
@@ -66,76 +63,82 @@ class _telaPrincipalState extends State<telaPrincipal> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        //No título terá o nome do Usurio que ele poderá definir
-        title: Text("Bem vindo 'Fulano de Tal'"),
-        //Estou usando Theme por isso não precisa declarar cores
-        //Theme esta na Main.dart
-        //backgroundColor: Colors.blueAccent,
-      ),
-      //Drawer é a barra de ferramentas que aparece ao lado
-      drawer: new Drawer(
-        //Cada filho é uma opação que ao ser clicado puxará outra tela
-        child: ListView(
-          children: <Widget>[
-            new UserAccountsDrawerHeader(
-              accountName: Text("Fulano de Tal"),
-              accountEmail: Text("taldefulano@gmail.com"),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Text("F"),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          //No título terá o nome do Usurio que ele poderá definir
+          title: Text("Bem vindo 'Fulano de Tal'"),
+          //Estou usando Theme por isso não precisa declarar cores
+          //Theme esta na Main.dart
+          //backgroundColor: Colors.blueAccent,
+        ),
+        //Drawer é a barra de ferramentas que aparece ao lado
+        drawer: new Drawer(
+          //Cada filho é uma opação que ao ser clicado puxará outra tela
+          child: ListView(
+            children: <Widget>[
+              new UserAccountsDrawerHeader(
+                accountName: Text("Fulano de Tal"),
+                accountEmail: Text("taldefulano@gmail.com"),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Text("F"),
+                ),
               ),
-            ),
-            new ListTile(
-              title: Text("Pefil"),
-              trailing: Icon(Icons.person),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed("/perfil");
-              },
-            ),
-            new ListTile(
-              title: Text("Configurações"),
-              trailing: Icon(Icons.settings),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed("/config");
-              },
-            ),
-            new ListTile(
-              title: Text("Logout"),
-              trailing: Icon(Icons.chevron_left),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed("/login");
-              }
-            ),
-            new Divider(),
-            //O Fechar somente fecha a barra de ferramentas
-            new ListTile(
-              title: Text("Fechar"),
-              trailing: Icon(Icons.close),
-              onTap: () => Navigator.of(context).pop(),
-            )
+              new ListTile(
+                title: Text("Pefil"),
+                trailing: Icon(Icons.person),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed("/perfil");
+                },
+              ),
+              new ListTile(
+                title: Text("Configurações"),
+                trailing: Icon(Icons.settings),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed("/config");
+                },
+              ),
+              new ListTile(
+                title: Text("Logout"),
+                trailing: Icon(Icons.chevron_left),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed("/login");
+                }
+              ),
+              new Divider(),
+              //O Fechar somente fecha a barra de ferramentas
+              new ListTile(
+                title: Text("Fechar"),
+                trailing: Icon(Icons.close),
+                onTap: () => Navigator.of(context).pop(),
+              )
+            ],
+          ),
+        ),
+
+        //Chama a pagina com o body do MAPA
+        body: _chamaPagina(_indexAtual),
+
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _indexAtual,
+          onTap: (value) {
+            _indexAtual = value;
+            setState(() {});
+          },
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.map), title: Text("Mapa")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.list), title: Text("Eventos")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.event_note), title: Text("Meus Eventos")),
           ],
         ),
-      ),
-
-      //Chama a pagina com o body do MAPA
-      body: _chamaPagina(_indexAtual),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _indexAtual,
-        onTap: (value) {
-          _indexAtual = value;
-          setState(() {});
-        },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.map), title: Text("Mapa")),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.list), title: Text("Eventos"))
-        ],
       ),
     );
   }

@@ -42,7 +42,7 @@ class _telaEventosState extends State<telaEventos> {
 
     for (var e in jsonData) {
       Event event = Event(e['id'], e['name'], e["target"], e["date_event"],
-          e["desc"], e["init"], e["end"], e["link"], e["type"]);
+          e["desc"], e["init"], e["end"], e["link"], e["type"], e["sector"],e["block"]);
       events.add(event);
     }
     return events;
@@ -236,81 +236,83 @@ class DetailPage extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 20.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Column(
                               children: <Widget>[
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 10.0),
-                                  child: RaisedButton(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(24),
-                                    ),
-                                    onPressed: () {
-                                      //Ao pressionar Alterar:
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => alterEvent(
-                                              event: event,
-                                            ),
-                                          ));
-                                    },
-                                    padding: EdgeInsets.all(12),
-                                    //color: Colors.lightBlueAccent,
-                                    child: Text('Alterar Evento',
-                                        style: TextStyle(color: Colors.white)),
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 10.0),
-                                  child: RaisedButton(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(24),
-                                    ),
-                                    onPressed: () {
-                                      //Ao pressionar Deletar:
-
-                                      var alert = AlertDialog(
-                                        title: Text(
-                                          "Deletar",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 18.0),
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 10.0),
+                                      child: RaisedButton(
+                                        color: Color(0xFF8A275D),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(24),
                                         ),
-                                        content: Text(
-                                            "Deseja realmente deletar esse evento?"),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                              onPressed: () {
-                                                //Faz a requisição com o ID do evento
-                                                Navigator.of(context).push(
-                                                    new MaterialPageRoute(
-                                                        builder: (BuildContext
-                                                            context) {
-                                                  return new telaPrincipal();
-                                                }));
-                                              },
-                                              child: Text("Sim")),
-                                          FlatButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text("Não"))
-                                        ],
-                                      );
+                                        onPressed: () {
+                                          //Ao pressionar Alterar:
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => alterEvent(
+                                                  event: event,
+                                                ),
+                                              ));
+                                        },
+                                        padding: EdgeInsets.fromLTRB(30, 12, 30, 12),
+                                        child: Text('Alterar Evento',
+                                            style: TextStyle(color: Colors.white,fontSize: 16)),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 5.0),
+                                      child: RaisedButton(
+                                        color: Color(0xFF295492),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(24),
+                                        ),
+                                        onPressed: () {
+                                          //Ao pressionar Deletar:
 
-                                      //Mostra a caixa de Alerta:
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => alert);
-                                    },
-                                    padding: EdgeInsets.all(12),
-                                    //color: Colors.lightBlueAccent,
-                                    child: Text('Deletar Evento',
-                                        style: TextStyle(color: Colors.white)),
-                                  ),
+                                          var alert = AlertDialog(
+                                            title: Text(
+                                              "Deletar",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 18.0),
+                                            ),
+                                            content: Text(
+                                                "Deseja realmente deletar esse evento?"),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                  onPressed: () {
+                                                    //Faz a requisição com o ID do evento
+                                                    Navigator.of(context).push(
+                                                        new MaterialPageRoute(
+                                                            builder: (BuildContext
+                                                                context) {
+                                                      return new telaPrincipal();
+                                                    }));
+                                                  },
+                                                  child: Text("Sim")),
+                                              FlatButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text("Não"))
+                                            ],
+                                          );
+
+                                          //Mostra a caixa de Alerta:
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => alert);
+                                        },
+                                        padding: EdgeInsets.fromLTRB(30, 12, 30, 12),
+                                        //color: Colors.lightBlueAccent,
+                                        child: Text('Deletar Evento',
+                                            style: TextStyle(color: Colors.white,fontSize: 16)),
+                                      ),
+
+
                                 ),
                               ],
                             )
