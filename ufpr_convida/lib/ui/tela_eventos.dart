@@ -14,7 +14,8 @@ import 'package:ufpr_convida/ui/tela_principal.dart';
 import 'package:ufpr_convida/modelos/evento.dart';
 
 String urlCelular = "http://192.168.0.107:8080/events";
-String urlNotebook = "http://10.0.2.2:8080/events";
+    //"http://192.168.0.107:8080/events";
+//String urlNotebook = "http://10.0.2.2:8080/events";
 class telaEventos extends StatefulWidget {
   @override
   _telaEventosState createState() => _telaEventosState();
@@ -156,7 +157,7 @@ class DetailPage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(top: 250),
                 child: Container(
-                  height: 325.00,
+                  height: 375.00,
                   width: 350.00,
                   child: Material(
                     color: Colors.white,
@@ -288,12 +289,12 @@ class DetailPage extends StatelessWidget {
                                                   onPressed: () {
                                                     deleteEvent();
                                                     //Faz a requisição com o ID do evento
-//                                                    Navigator.of(context).push(
-//                                                        new MaterialPageRoute(
-//                                                            builder: (BuildContext
-//                                                                context) {
-//                                                      return new telaPrincipal();
-//                                                    }));
+                                                    Navigator.of(context).push(
+                                                        new MaterialPageRoute(
+                                                            builder: (BuildContext
+                                                                context) {
+                                                      return new telaPrincipal();
+                                                    }));
                                                   },
                                                   child: Text("Sim")),
                                               FlatButton(
@@ -335,9 +336,9 @@ class DetailPage extends StatelessWidget {
   }
 
   Future deleteEvent() async {
-    //TESTANDO DELETE -- Organizar depois
+    //TESTANDO DELETE -- Organizar depois 
     String id = event.id;
-    String url = "https://192.168.0.103:8080/events/$id";
+    String url ="http://192.168.0.107:8080/events/$id";
     print("Deletando: $url");
     Response response = await http.delete(url);
     int statusCode = response.statusCode;

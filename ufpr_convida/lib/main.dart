@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:ufpr_convida/ui/home.dart';
+import 'package:ufpr_convida/ui/sign_up_screen.dart';
 import 'package:ufpr_convida/ui/splash_screen.dart';
 import 'package:ufpr_convida/ui/tela_configuracoes.dart';
 import 'package:ufpr_convida/ui/tela_mapa.dart';
@@ -39,6 +40,7 @@ void main() {
           "/config" : (BuildContext context) => new telaConfig(),
           "/login"  : (BuildContext context) => new Home(),
           "/map"    : (BuildContext context) => new telaMapa(),
+          "/signup" : (BuildContext context) => new SignUpScreen()
 
         } ,
       )

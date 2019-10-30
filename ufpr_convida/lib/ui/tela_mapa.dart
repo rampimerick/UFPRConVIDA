@@ -12,10 +12,12 @@ import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_novo_evento.dart';
 import 'package:uuid/uuid.dart';
 
-Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+
 var randID = Uuid();
 String urlCelular = "http://192.168.0.107:8080/events";
-String urlNotebook = "http://10.0.2.2:8080/events";
+//"http://10.0.2.2:8080/events";
+//"http://192.168.0.107:8080/events";
+//String urlNotebook = "http://10.0.2.2:8080/events";
 
 class InfoMarker {
   String name;
@@ -35,13 +37,19 @@ class telaMapa extends StatefulWidget {
 class _telaMapaState extends State<telaMapa> {
   //Implementa a API do google, ao final do codigo temos um marker da UFPR
 
+  void initState() {
+    super.initState();
+    print("Construindo Mapa");
+
+  }
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   Completer<GoogleMapController> _controller = Completer();
 
   void _onMapCreated(GoogleMapController controller) {
     _controller.complete(controller);
   }
 
-  Future<List> getMarkers(BuildContext context) async {
+  Future <Map<MarkerId, Marker>> getMarkers(BuildContext context) async {
 
     http.Response response = await http.get(urlCelular);
     print("StatusCode:${response.statusCode}");
@@ -68,11 +76,13 @@ class _telaMapaState extends State<telaMapa> {
       infos.add(info);
       //print("Coords:${info.lat} ${info.lng}");
     }
-    createMarkers(infos, context);
-    return infos;
+
+    return createMarkers(infos, context);
   }
 
-  createMarkers(List<InfoMarker> infos, BuildContext context) {
+  Future <Map<MarkerId, Marker>> createMarkers(List<InfoMarker> infos, BuildContext context) async {
+    Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+
     for (var mk in infos) {
       LatLng location = new LatLng(mk.lat, mk.lng);
       setState(() {
@@ -92,6 +102,7 @@ class _telaMapaState extends State<telaMapa> {
         markers[markerId] = marker;
       });
     }
+    return markers;
   }
 
   @override
@@ -115,21 +126,22 @@ class _telaMapaState extends State<telaMapa> {
           children: <Widget>[
             GoogleMap(
               mapType: MapType.normal,
-              myLocationEnabled: true,
+              myLocationEnabled: false,
               myLocationButtonEnabled: true,
               compassEnabled: true,
               initialCameraPosition: CameraPosition(
                   target: LatLng(-25.4560508, -49.2371759), zoom: 12),
+
               onMapCreated: (GoogleMapController controller) async {
 
-                List<InfoMarker> mkrs = await getMarkers(context);
+                markers = await getMarkers(context);
                 _controller.complete(controller);
 
               },
+
               onLongPress: (latlang) {
                 _addMarkerLongPressed(latlang);
               },
-
               markers: Set<Marker>.of(markers.values),
               //onLongPress: ,
             ),

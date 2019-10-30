@@ -12,17 +12,23 @@ class _HomeState extends State<Home> {
   final TextEditingController _usuarioController = new TextEditingController();
   final TextEditingController _senhaController = new TextEditingController();
 
+  String hint = "GRR:";
   int selectedRadio;
 
   @override
   void initState() {
     super.initState();
-    selectedRadio = 0;
+    selectedRadio = 1;
   }
 
   void SelectedRadio(int val) {
     setState(() {
       selectedRadio = val;
+      if (val == 2){
+        hint = "Email:";
+      }
+      else
+        hint = "GRR:";
     });
   }
 
@@ -70,7 +76,7 @@ class _HomeState extends State<Home> {
                       ButtonBar(
                         alignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text("Servidor", style: TextStyle(fontSize: 16)),
+                          Text("Aluno", style: TextStyle(fontSize: 16)),
                           Radio(
                             value: 1,
                             groupValue: selectedRadio,
@@ -80,7 +86,7 @@ class _HomeState extends State<Home> {
                             },
                             //activeColor: Colors.indigo,
                           ),
-                          Text("Aluno", style: TextStyle(fontSize: 16)),
+                          Text("Servidor", style: TextStyle(fontSize: 16)),
                           Radio(
                             value: 2,
                             groupValue: selectedRadio,
@@ -99,7 +105,7 @@ class _HomeState extends State<Home> {
                         child: TextField(
                           controller: _usuarioController,
                           decoration: InputDecoration(
-                              hintText: "Email: ",
+                              hintText: hint,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(4.5)),
                               icon: Icon(Icons.person)),
@@ -158,6 +164,7 @@ class _HomeState extends State<Home> {
                                         ),
                                         onPressed: () {
                                           //Ao pressionar Cadastrar:
+                                          Navigator.of(context).pushNamed("/signup");
                                         },
                                         padding:
                                             EdgeInsets.fromLTRB(43, 12, 43, 12),
