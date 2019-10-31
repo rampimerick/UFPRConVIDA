@@ -25,10 +25,16 @@ dependencies:
   cupertino_icons: ^0.1.2
   google_maps_flutter: ^0.5.11
   flutter_masked_text: ^0.8.0
+  http: any
+  intl: ^0.16.0
+  uuid: 2.0.1
+  flushbar: ^1.5.0
 
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
 
 # For information on the generic Dart part of this file, see the
@@ -48,6 +54,9 @@ flutter:
     - assets/logo-ufprconvida.tiff
     - assets/logo-ufprconvida.png
     - assets/logo-ufprconvida-sembordas.png
+    - assets/event-type-1.png
+    - assets/event-type-2.png
+    - assets/event-type-3.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
