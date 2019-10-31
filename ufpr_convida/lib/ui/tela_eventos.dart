@@ -45,7 +45,7 @@ class _telaEventosState extends State<telaEventos> {
 
     for (var e in jsonData) {
       Event event = Event(e['id'], e['name'], e["target"], e["date_event"],
-          e["desc"], e["init"], e["end"], e["link"], e["type"], e["sector"],e["block"]);
+          e["desc"], e["init"], e["end"], e["link"], e["type"], e["sector"],e["bloc"]);
       events.add(event);
     }
     return events;
@@ -132,7 +132,12 @@ class DetailPage extends StatelessWidget {
     initializeDateFormatting("pt_BR", null);
 
     var f = new DateFormat.yMMMMd().add_Hm();
-    var parsedDate = DateTime.parse(event.date_event);
+    var parsedDate;
+    String showDateEvent = "Data não informada";
+    if (event.date_event != null){
+      parsedDate = DateTime.parse(event.date_event);
+      showDateEvent = f.format(parsedDate);
+    }
 
     String imagem;
     if (event.type.compareTo('Reuniao') == 0) {
@@ -206,7 +211,7 @@ class DetailPage extends StatelessWidget {
                                     height: 10.0,
                                   ),
                                   Text(
-                                    " ${f.format(parsedDate)}",
+                                    "$showDateEvent",
                                     style: TextStyle(
                                         fontSize: 20.0,
                                         color: Color(0xffE810350)),
@@ -336,7 +341,7 @@ class DetailPage extends StatelessWidget {
   }
 
   Future deleteEvent() async {
-    //TESTANDO DELETE -- Organizar depois 
+    //TESTANDO DELETE -- Organizar depois
     String id = event.id;
     String url ="http://192.168.0.107:8080/events/$id";
     print("Deletando: $url");

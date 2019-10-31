@@ -33,7 +33,7 @@ class Post {
   final String link;
   final String type;
   final String sector;
-  final String block;
+  final String bloc;
   final double lat;
   final double lng;
 
@@ -47,7 +47,7 @@ class Post {
       this.link,
       this.type,
       this.sector,
-      this.block,
+      this.bloc,
       this.lat,
       this.lng});
 
@@ -63,7 +63,7 @@ class Post {
         link: json['link'],
         type: json['type'],
         sector: json['sector'],
-        block: json['block'],
+        bloc: json['bloc'],
         lat: json['lat'],
         lng: json['lng']);
   }
@@ -79,7 +79,7 @@ class Post {
       "link": link,
       "type": type,
       "sector": sector,
-      "block": block,
+      "bloc": bloc,
       "lat": lat,
       "lng": lng
     };
@@ -150,7 +150,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
       new TextEditingController();
   final TextEditingController _eventSectorController =
       new TextEditingController();
-  final TextEditingController _eventBlockController =
+  final TextEditingController _eventBlocController =
       new TextEditingController();
 
   Widget build(BuildContext context) {
@@ -455,7 +455,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                 Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: TextField(
-                      controller: _eventBlockController,
+                      controller: _eventBlocController,
                       decoration: InputDecoration(
                         hintText: "Caso for na UFPR: Informe o Bloco",
                         //border: OutlineInputBorder(
@@ -525,7 +525,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                                   link: _eventLinkController.text,
                                   type: _eventTypeController.text,
                                   sector: _eventSectorController.text,
-                                  block: _eventBlockController.text,
+                                  bloc: _eventBlocController.text,
                                   lat: location.coords.latitude,
                                   lng: location.coords.longitude);
 

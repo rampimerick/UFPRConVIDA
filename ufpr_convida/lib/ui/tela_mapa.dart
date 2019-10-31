@@ -126,7 +126,7 @@ class _telaMapaState extends State<telaMapa> {
           children: <Widget>[
             GoogleMap(
               mapType: MapType.normal,
-              myLocationEnabled: false,
+              myLocationEnabled: true,
               myLocationButtonEnabled: true,
               compassEnabled: true,
               initialCameraPosition: CameraPosition(

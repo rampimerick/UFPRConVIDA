@@ -1,5 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ufpr_convida/modelos/evento.dart';
+import 'package:http/http.dart' as http;
+import 'package:ufpr_convida/ui/tela_eventos.dart';
+import 'package:ufpr_convida/ui/tela_principal.dart';
+
+String urlCelular = "http://192.168.0.107:8080/events";
+DateTime parsedDateEvent = DateTime.now();
+DateTime parsedDateInit = DateTime.now();
+DateTime parsedDateEnd = DateTime.now();
+
+String showDateEvent = "Informe a Data do Evento";
+String showDateInit ="Informe o Início das Inscrições";
+String showDateEnd = "Informe o Fim das Inscrições";
+
+String dateEvent ="";
+String dateInit ="";
+String dateEnd ="";
+
+final DateFormat showDate = DateFormat("dd/MM/yyyy HH:mm");
+final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss");
+
 
 class alterEvent extends StatefulWidget {
   Event event;
@@ -12,61 +35,75 @@ class alterEvent extends StatefulWidget {
 
 class _alterEventState extends State<alterEvent> {
   Event event;
-
   _alterEventState(this.event);
 
-  @override
-  //Controles:
-  final TextEditingController _eventNameController =
-      new TextEditingController();
-  final TextEditingController _eventTargetController =
-      new TextEditingController();
-  final TextEditingController _eventDescController =
-      new TextEditingController();
-  final TextEditingController _eventLinkController =
-      new TextEditingController();
-  final TextEditingController _eventTypeController =
-      new TextEditingController();
-  final TextEditingController _eventSectorController =
-      new TextEditingController();
-  final TextEditingController _eventBlockController =
-      new TextEditingController();
-  //Tratar as datas:
+    @override
+    void initState() {
+      _eventNameController.text = event.name;
+      _eventTargetController.text = event.target;
+      _eventDescController.text = event.desc;
+      _eventLinkController.text = event.link;
+      _eventTypeController.text = event.type;
+      _eventBlocController.text = event.bloc;
+      _eventSectorController.text = event.sector;
+      //Datas:
+      //Mostrar as datas como nao informadas, pois ao criar eventos sem informar datas, todas recebem a mesma data
+      if (event.init == event.end) {
+        showDateInit = "Informe o Início das Inscrições";
+        showDateEnd = "Informe o Fim das Inscrições";
+      }
+      if ((event.date_event == event.init) && (event.date_event == event.end)) {
+        showDateEvent = "Informe a Data do Evento";
+        showDateInit = "Informe o Início das Inscrições";
+        showDateEnd = "Informe o Fim das Inscrições";
+      }
 
-  Widget build(BuildContext context) {
-    name();
-    //Target
-    _eventTargetController.value = _eventTargetController.value.copyWith(
-        text: event.target,
-        selection: TextSelection(
-            baseOffset: event.target.length, extentOffset: event.target.length),
-        composing: TextRange.empty);
-    //Desc
-    _eventDescController.value = _eventDescController.value.copyWith(
-        text: event.desc,
-        selection: TextSelection(
-            baseOffset: event.desc.length, extentOffset: event.desc.length),
-        composing: TextRange.empty);
-    //Link
-    _eventLinkController.value = _eventLinkController.value.copyWith(
-        text: event.link,
-        selection: TextSelection(
-            baseOffset: event.link.length, extentOffset: event.link.length),
-        composing: TextRange.empty);
-    //Type
-    _eventTypeController.value = _eventTypeController.value.copyWith(
-        text: event.type,
-        selection: TextSelection(
-            baseOffset: event.type.length, extentOffset: event.type.length),
-        composing: TextRange.empty);
-    //Sector
-    //Block
-    //Data
-    //Init
-    //End
+      if (event.date_event != null) {
+        parsedDateEvent = DateTime.parse(event.date_event);
+        dateEvent = dateFormat.format(parsedDateEvent);
+        showDateEvent = showDate.format(parsedDateEvent);
+      }
+      if (event.init != null) {
+        parsedDateInit = DateTime.parse(event.init);
+        dateInit = dateFormat.format(parsedDateInit);
+        showDateInit = showDate.format(parsedDateInit);
+      }
+      if (event.end != null) {
+        parsedDateEnd = DateTime.parse(event.end);
+        dateEnd = dateFormat.format(parsedDateEnd);
+        showDateEnd = showDate.format(parsedDateEnd);
+      }
+      super.initState();
+    }
+
+    //Controles:
+      final TextEditingController _eventNameController =
+      new TextEditingController();
+      final TextEditingController _eventTargetController =
+      new TextEditingController();
+      final TextEditingController _eventDescController =
+      new TextEditingController();
+      final TextEditingController _eventLinkController =
+      new TextEditingController();
+      final TextEditingController _eventTypeController =
+      new TextEditingController();
+      final TextEditingController _eventSectorController =
+      new TextEditingController();
+      final TextEditingController _eventBlocController =
+      new TextEditingController();
+
+    final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss");
+    final DateFormat showDate = DateFormat("dd/MM/yyyy HH:mm");
+
+    DateTime selectedDateEvent = DateTime.now();
+    DateTime selectedDateInit = DateTime.now();
+    DateTime selectedDateEnd = DateTime.now();
+
+    Widget build(BuildContext context) {
 
     return Scaffold(
       //child: Text("Evento que será alterado: ${event.name}"),
+
       body: Container(
         child: ListView(
           children: <Widget>[
@@ -126,7 +163,208 @@ class _alterEventState extends State<alterEvent> {
             ),
             //-----------------------
             //DATAS:
+            //Data do Evento:
+            Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  children: <Widget>[
 
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(45.0, 8.0, 8.0, 8.0),
+                      child: Container(
+                        width: 242.0,
+                        height: 38.0,
+                        child: Center(
+                          child: Text(showDateEvent,
+                            style: TextStyle(
+                                color: Color(0xFF295492),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16.0
+                            ),),
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Color(0xFF295492),
+                              width: 3.0,
+                              style: BorderStyle.solid
+                          ),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(6)
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: RaisedButton(
+                        child: Icon(Icons.today),
+                        onPressed: () async {
+                          final selectedDate = await _selectedDateTime(context);
+                          if (selectedDate == null) return 0;
+
+                          final selectedTime = await _selectedTime(context);
+                          if (selectedDate == null) return 0;
+
+                          setState(() {
+                            this.selectedDateEvent = DateTime(
+                                selectedDate.year,
+                                selectedDate.month,
+                                selectedDate.day,
+                                selectedTime.hour,
+                                selectedTime.minute
+                            );
+                            dateEvent = dateFormat.format(selectedDateEvent);
+                            showDateEvent = showDate.format(selectedDateEvent);
+                            print("Formato data post: $dateEvent");
+                          });
+                          return 0;
+                        },
+                        padding: EdgeInsets.all(5),
+
+                      ),
+                    ),
+
+                  ],
+                )),
+
+            //Data Inicio Inscrições
+            Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  children: <Widget>[
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(45.0, 8.0, 8.0, 8.0),
+                      child: Container(
+                        width: 242.0,
+                        height: 38.0,
+                        child: Center(
+                          child: Text(showDateInit,
+                            style: TextStyle(
+                                color: Color(0xFF295492),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16.0
+                            ),),
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Color(0xFF295492),
+                              width: 3.0,
+                              style: BorderStyle.solid
+                          ),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(6)
+                          ),
+
+
+                        ),
+
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: RaisedButton(
+                        child: Icon(Icons.today),
+                        onPressed: () async {
+                          final selectedDate = await _selectedDateTime(context);
+                          if (selectedDate == null) return 0;
+
+                          final selectedTime = await _selectedTime(context);
+                          if (selectedDate == null) return 0;
+
+                          setState(() {
+                            this.selectedDateInit = DateTime(
+                                selectedDate.year,
+                                selectedDate.month,
+                                selectedDate.day,
+                                selectedTime.hour,
+                                selectedTime.minute
+                            );
+                            dateInit = dateFormat.format(selectedDateInit);
+                            showDateInit = showDate.format(selectedDateInit);
+                            print("Formato data post: $dateInit");
+                          });
+                          return 0;
+                        },
+
+                        padding: EdgeInsets.all(5),
+
+                      ),
+                    ),
+
+                  ],
+                )),
+
+            //Data Fim Inscrições:
+            Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  children: <Widget>[
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(45.0, 8.0, 8.0, 8.0),
+                      child: Container(
+                        width: 242.0,
+                        height: 38.0,
+                        child: Center(
+                          child: Text(showDateEnd,
+                            style: TextStyle(
+                                color: Color(0xFF295492),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16.0
+                            ),),
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Color(0xFF295492),
+                              width: 3.0,
+                              style: BorderStyle.solid
+                          ),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(6)
+                          ),
+
+
+                        ),
+
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: RaisedButton(
+                        child: Icon(Icons.today),
+                        onPressed: () async {
+                          final selectedDate = await _selectedDateTime(context);
+                          if (selectedDate == null) return 0;
+
+                          final selectedTime = await _selectedTime(context);
+                          if (selectedDate == null) return 0;
+
+                          setState(() {
+                            this.selectedDateEnd = DateTime(
+                                selectedDate.year,
+                                selectedDate.month,
+                                selectedDate.day,
+                                selectedTime.hour,
+                                selectedTime.minute
+                            );
+                            dateEnd = dateFormat.format(selectedDateEnd);
+                            showDateEnd = showDate.format(selectedDateEnd);
+                            print("Formato data post: $dateEnd");
+                          });
+                          return 0;
+                        },
+
+                        padding: EdgeInsets.all(5),
+
+                      ),
+                    ),
+
+                  ],
+                )),
             //-----------------------
             //Link
             Padding(
@@ -172,7 +410,7 @@ class _alterEventState extends State<alterEvent> {
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: TextField(
-                  controller: _eventBlockController,
+                  controller: _eventBlocController,
                   decoration: InputDecoration(
                     hintText: "Caso for na UFPR: Informe o Bloco",
                     //border: OutlineInputBorder(
@@ -192,7 +430,9 @@ class _alterEventState extends State<alterEvent> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                       child: FlatButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                         color: Color(0xFF295492),
                         shape:RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
@@ -206,7 +446,40 @@ class _alterEventState extends State<alterEvent> {
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: new AlterButton(),
+                      child: RaisedButton(
+                        onPressed: () async {
+                          Put newPut = new Put(
+                            name: _eventNameController.text,
+                            target: _eventTargetController.text,
+                            date_event: dateEvent,
+                            desc: _eventDescController.text,
+                            init: dateInit,
+                            end: dateEnd,
+                            link:_eventLinkController.text,
+                            type: _eventTypeController.text,
+                            sector: _eventSectorController.text,
+                            bloc: _eventBlocController.text
+                          );
+                          String stringPut = json.encode(newPut.toMap());
+                          print(stringPut);
+
+                          Put p = await createPut("$urlCelular/${event.id}",body: stringPut);
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return new telaPrincipal();
+                              }));
+                        },
+                        color: Color(0xFF8A275D),
+                        shape:RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+
+                        ),
+                        padding: EdgeInsets.fromLTRB(30, 12, 30, 12),
+                        child: Text(
+                          "Alterar",
+                          style: TextStyle(color: Colors.white, fontSize: 17.0),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -226,27 +499,96 @@ class _alterEventState extends State<alterEvent> {
       composing: TextRange.empty,
     );
   }
-}
 
-class AlterButton extends StatelessWidget {
-  const AlterButton({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return RaisedButton(
-      onPressed: () async {},
-      color: Color(0xFF8A275D),
-      shape:RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-
-      ),
-      padding: EdgeInsets.fromLTRB(30, 12, 30, 12),
-      child: Text(
-        "Alterar",
-        style: TextStyle(color: Colors.white, fontSize: 17.0),
-      ),
+  Future<TimeOfDay> _selectedTime(BuildContext context) {
+    final now = DateTime.now();
+    return showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
     );
   }
+
+  Future<DateTime> _selectedDateTime(BuildContext context) => showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(Duration(seconds: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100));
+}
+
+class Put {
+  //final String Id;
+  final String name;
+  final String target;
+  final String date_event;
+  final String desc;
+  final String init;
+  final String end;
+  final String link;
+  final String type;
+  final String sector;
+  final String bloc;
+
+  Put(
+      { this.name,
+        this.target,
+        this.date_event,
+        this.desc,
+        this.init,
+        this.end,
+        this.link,
+        this.type,
+        this.sector,
+        this.bloc});
+
+  factory Put.fromJson(Map<String, dynamic> json) {
+    return Put(
+
+        name: json['name'],
+        target: json['target'],
+        date_event: json['date_event'],
+        desc: json['desc'],
+        init: json['init'],
+        end: json['end'],
+        link: json['link'],
+        type: json['type'],
+        sector: json['sector'],
+        bloc: json['bloc']
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "name": name,
+      "target": target,
+      "date_event": date_event,
+      "desc": desc,
+      "init": init,
+      "end": end,
+      "link": link,
+      "type": type,
+      "sector": sector,
+      "bloc": bloc,
+    };
+  }
+}
+
+Future<Put> createPut(String url, {String body}
+    /*Aqui tem que ter HEADERS?*/) async {
+  Map<String, String> mapHeaders = {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+  };
+
+  return http
+      .put(url, body: body, headers: mapHeaders)
+      .then((http.Response response) {
+    final int statusCode = response.statusCode;
+    print(statusCode);
+
+    if ((statusCode == 200) || (statusCode == 201) || (statusCode == 204)) {
+      return null; //Post.fromJson(json.decode(response.body));
+    } else {
+      throw new Exception("Error while fetching data");
+    }
+  });
 }
