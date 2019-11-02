@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
 
-String urlCelular = "http://192.168.0.107:8080/events";
+String urlCelular = "http://192.168.15.4:8080/events";
 DateTime parsedDateEvent = DateTime.now();
 DateTime parsedDateInit = DateTime.now();
 DateTime parsedDateEnd = DateTime.now();

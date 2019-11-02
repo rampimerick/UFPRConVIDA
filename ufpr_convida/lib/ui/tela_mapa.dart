@@ -14,9 +14,9 @@ import 'package:uuid/uuid.dart';
 
 
 var randID = Uuid();
-String urlCelular = "http://192.168.0.107:8080/events";
+String urlCelular = "http://192.168.15.4:8080/events";
 //"http://10.0.2.2:8080/events";
-//"http://192.168.0.107:8080/events";
+//"http://192.168.15.47:8080/events";
 //String urlNotebook = "http://10.0.2.2:8080/events";
 
 class InfoMarker {

@@ -13,8 +13,8 @@ import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
 
 
-String urlCelular = "http://192.168.0.107:8080/events";
-//"http://192.168.0.107:8080/events";
+String urlCelular = "http://192.168.15.4:8080/events";
+//"http://192.168.15.4:8080/events";
 //String urlNotebook = "http://10.0.2.2:8080/events";
 
 var coord = null;

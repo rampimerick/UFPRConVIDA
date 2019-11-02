@@ -13,8 +13,8 @@ import 'package:ufpr_convida/ui/alter_event_screen.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
 import 'package:ufpr_convida/modelos/evento.dart';
 
-String urlCelular = "http://192.168.0.107:8080/events";
-    //"http://192.168.0.107:8080/events";
+String urlCelular = "http://192.168.15.4:8080/events";
+    //"http://192.168.15.4:8080/events";
 //String urlNotebook = "http://10.0.2.2:8080/events";
 class telaEventos extends StatefulWidget {
   @override
@@ -343,7 +343,7 @@ class DetailPage extends StatelessWidget {
   Future deleteEvent() async {
     //TESTANDO DELETE -- Organizar depois
     String id = event.id;
-    String url ="http://192.168.0.107:8080/events/$id";
+    String url ="http://192.168.15.4:8080/events/$id";
     print("Deletando: $url");
     Response response = await http.delete(url);
     int statusCode = response.statusCode;

@@ -10,8 +10,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'my_events_screen.dart';
 
-String urlCelular = "http://192.168.0.107:8080/events";
-    //"http://192.168.0.107:8080/events";
+String urlCelular = "http://192.168.15.4:8080/events";
+    //"http://192.168.15.4:8080/events";
 //String urlNotebook = "http://10.0.2.2:8080/events";
 
 class telaPrincipal extends StatefulWidget {
