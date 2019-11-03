@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
 
-String urlCelular = "http://192.168.0.107:8080/events";
+String urlCelular = "http://10.0.2.2:8080/events";
 DateTime parsedDateEvent = DateTime.now();
 DateTime parsedDateInit = DateTime.now();
 DateTime parsedDateEnd = DateTime.now();
@@ -26,7 +26,6 @@ final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss");
 
 class alterEvent extends StatefulWidget {
   Event event;
-
   alterEvent({Key key, @required this.event}) : super(key: key);
 
   @override
@@ -37,8 +36,15 @@ class _alterEventState extends State<alterEvent> {
   Event event;
   _alterEventState(this.event);
 
+  List _types = ["Reunião","Festa","Formatura","Indefinido"];
+  List<DropdownMenuItem<String>> _dropDownMenuItemsTypes;
+  String _currentType;
+
     @override
     void initState() {
+      _dropDownMenuItemsTypes = getDropDownMenuItemsTypes();
+      _currentType = _dropDownMenuItemsTypes[0].value;
+
       _eventNameController.text = event.name;
       _eventTargetController.text = event.target;
       _eventDescController.text = event.desc;
@@ -380,18 +386,40 @@ class _alterEventState extends State<alterEvent> {
                   )),
             ),
 
-            //Tipo:
+            //Tipo
             Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                  controller: _eventTypeController,
-                  decoration: InputDecoration(
-                    hintText: "Tipo do seu Evento:",
-                    //border: OutlineInputBorder(
-                    //  borderRadius:,
-                    //),
-                    icon: Icon(Icons.assignment),
-                  )),
+              padding: EdgeInsets.fromLTRB(6, 8, 8, 8),
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 10, 15, 0),
+                          child: Icon(Icons.calendar_today,color: Colors.grey),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 10, 18, 0),
+                          child: new Text("Tipo do evento: ", style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black54
+                          ),),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: DropdownButton(
+                            value: _currentType,
+                            items: _dropDownMenuItemsTypes,
+                            onChanged: changedDropDownItemType,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
             //Setor:
             Padding(
@@ -456,7 +484,7 @@ class _alterEventState extends State<alterEvent> {
                             init: dateInit,
                             end: dateEnd,
                             link:_eventLinkController.text,
-                            type: _eventTypeController.text,
+                            type: _currentType,
                             sector: _eventSectorController.text,
                             bloc: _eventBlocController.text
                           );
@@ -513,6 +541,20 @@ class _alterEventState extends State<alterEvent> {
       initialDate: DateTime.now().add(Duration(seconds: 1)),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100));
+
+  List<DropdownMenuItem<String>> getDropDownMenuItemsTypes() {
+    List<DropdownMenuItem<String>> items = new List();
+    for (String type in _types) {
+      items.add(new DropdownMenuItem(value: "$type", child: new Text(type)));
+    }
+    return items;
+  }
+
+  void changedDropDownItemType(String selected) {
+    setState(() {
+      _currentType = selected;
+    });
+  }
 }
 
 class Put {

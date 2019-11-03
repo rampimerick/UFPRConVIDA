@@ -1,16 +1,21 @@
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ufpr_convida/ui/home.dart';
 import 'package:ufpr_convida/ui/sign_up_screen.dart';
 import 'package:ufpr_convida/ui/splash_screen.dart';
 import 'package:ufpr_convida/ui/tela_configuracoes.dart';
 import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'package:ufpr_convida/ui/tela_perfil.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
 
   //Cores:  #8a275d
   //        #295492
+  initializeDateFormatting("pt_BR",null);
+
+
 
   Map<int, Color> color =
   {

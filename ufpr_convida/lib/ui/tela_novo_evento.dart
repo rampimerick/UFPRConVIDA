@@ -13,7 +13,7 @@ import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
 
 
-String urlCelular = "http://192.168.0.107:8080/events";
+String urlCelular = "http://10.0.2.2:8080/events";
 //"http://192.168.0.107:8080/events";
 //String urlNotebook = "http://10.0.2.2:8080/events";
 
@@ -128,9 +128,13 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
   DateTime selectedDateInit = DateTime.now();
   DateTime selectedDateEnd = DateTime.now();
 
+  List _types = ["Reunião","Festa","Formatura","Indefinido"];
+  List<DropdownMenuItem<String>> _dropDownMenuItemsTypes;
+  String _currentType;
+
   _telaNovoEventoState(this.location);
 
-  @override
+
   //Controles:
   final TextEditingController _eventNameController =
       new TextEditingController();
@@ -153,6 +157,14 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
   final TextEditingController _eventBlocController =
       new TextEditingController();
 
+  @override
+  void initState() {
+    _dropDownMenuItemsTypes = getDropDownMenuItemsTypes();
+    _currentType = _dropDownMenuItemsTypes[0].value;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
@@ -428,17 +440,40 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                         icon: Icon(Icons.link),
                       )),
                 ),
+                //Tipo
                 Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: TextField(
-                      controller: _eventTypeController,
-                      decoration: InputDecoration(
-                        hintText: "Tipo do seu Evento:",
-                        //border: OutlineInputBorder(
-                        //  borderRadius:,
-                        //),
-                        icon: Icon(Icons.assignment),
-                      )),
+                  padding: EdgeInsets.fromLTRB(6, 8, 8, 8),
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 15, 0),
+                              child: Icon(Icons.calendar_today,color: Colors.grey),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 18, 0),
+                              child: new Text("Tipo do evento: ", style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black54
+                              ),),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: DropdownButton(
+                                value: _currentType,
+                                items: _dropDownMenuItemsTypes,
+                                onChanged: changedDropDownItemType,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -523,7 +558,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                                   init: dateInit,
                                   end: dateEnd,
                                   link: _eventLinkController.text,
-                                  type: _eventTypeController.text,
+                                  type: _currentType,
                                   sector: _eventSectorController.text,
                                   bloc: _eventBlocController.text,
                                   lat: location.coords.latitude,
@@ -573,4 +608,19 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
       initialDate: DateTime.now().add(Duration(seconds: 1)),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100));
+
+  List<DropdownMenuItem<String>> getDropDownMenuItemsTypes() {
+    List<DropdownMenuItem<String>> items = new List();
+    for (String type in _types) {
+      items.add(new DropdownMenuItem(value: "$type", child: new Text(type)));
+    }
+    return items;
+  }
+
+  void changedDropDownItemType(String selected) {
+    setState(() {
+      _currentType = selected;
+    });
+  }
+
 }

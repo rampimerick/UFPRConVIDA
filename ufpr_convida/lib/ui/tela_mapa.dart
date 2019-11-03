@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ufpr_convida/modelos/location.dart';
+import 'package:ufpr_convida/ui/detailed_event_screen.dart';
 import 'package:ufpr_convida/ui/tela_configuracoes.dart';
 import 'package:http/http.dart' as http;
 import 'package:ufpr_convida/ui/tela_eventos.dart';
@@ -14,19 +15,20 @@ import 'package:uuid/uuid.dart';
 
 
 var randID = Uuid();
-String urlCelular = "http://192.168.0.107:8080/events";
+String urlCelular = "http://10.0.2.2:8080/events";
 //"http://10.0.2.2:8080/events";
 //"http://192.168.0.107:8080/events";
 //String urlNotebook = "http://10.0.2.2:8080/events";
 
 class InfoMarker {
+  String id;
   String name;
   double lat;
   double lng;
   String date;
   String link;
 
-  InfoMarker(this.name, this.lat, this.lng, this.date, this.link);
+  InfoMarker(this.id,this.name, this.lat, this.lng, this.date, this.link);
 }
 
 class telaMapa extends StatefulWidget {
@@ -72,7 +74,7 @@ class _telaMapaState extends State<telaMapa> {
 
     for (var m in jsonData) {
       InfoMarker info =
-          InfoMarker(m["name"], m["lat"], m["lng"], m["date_event"], m["link"]);
+          InfoMarker(m["id"],m["name"], m["lat"], m["lng"], m["date_event"], m["link"]);
       infos.add(info);
       //print("Coords:${info.lat} ${info.lng}");
     }
@@ -96,7 +98,7 @@ class _telaMapaState extends State<telaMapa> {
             infoWindow: InfoWindow(title: "${mk.name}", snippet: "${mk.link}"),
             icon: BitmapDescriptor.defaultMarker,
             onTap: () {
-              _showSnackBar(mk.name, context);
+              _showSnackBar(mk.name, mk.id, context);
             });
 
         markers[markerId] = marker;
@@ -202,13 +204,34 @@ class _telaMapaState extends State<telaMapa> {
 //
 //);
 
-void _showSnackBar(String eventName, BuildContext context) {
+void _showSnackBar(String eventName, String eventId,BuildContext context) {
   print("Context:$context");
   Flushbar(
-    message: "TESTE",
+    flushbarPosition: FlushbarPosition.BOTTOM,
+    margin: EdgeInsets.fromLTRB(10, 10, 10, 60),
+    borderRadius: 8,
+    backgroundColor: Colors.white,
+    boxShadows: [
+      BoxShadow(
+        color: Colors.black45,
+        offset: Offset(3,3),
+        blurRadius: 3
+      )
+    ],
+    dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+    messageText: Text("Evento: $eventName", style: TextStyle(color:Color(0xFF295492),fontSize: 18,fontWeight: FontWeight.bold)),
+    //message: "E",
     mainButton: FlatButton(
-      child: Text("Clique aqui"),
-      onPressed: () {},
+      child: Text("Visualizar"),
+      onPressed: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailedEventScreen(
+                idEvent: eventId,
+              ),
+            ));
+      },
     ),
     duration: Duration(seconds: 5),
   )..show(context);
