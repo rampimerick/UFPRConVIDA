@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
@@ -8,13 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:ufpr_convida/modelos/evento.dart';
 import 'package:ufpr_convida/ui/alter_event_screen.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
-import 'package:ufpr_convida/main.dart';
-
-
-
-
-String urlCelular = "http://10.0.2.2:8080/events";
-
+import 'package:ufpr_convida/util/globals.dart' as globals;
 
 class DetailedEventScreen extends StatefulWidget {
   String idEvent;
@@ -33,7 +26,7 @@ class _DetailedEventScreenState extends State<DetailedEventScreen> {
   _DetailedEventScreenState(this.idEvent);
 
   Future<Event> event;
-
+  String url = globals.URL;
   @override
   void initState() {
     print("ID do Evento:$idEvent");
@@ -43,7 +36,7 @@ class _DetailedEventScreenState extends State<DetailedEventScreen> {
 
   Future<Event> getEvent() async {
     http.Response response =
-        await http.get("http://10.0.2.2:8080/events/$idEvent");
+        await http.get("$url/events/$idEvent");
     print(response.statusCode);
     var jsonEvent;
     if ((response.statusCode == 200) || (response.statusCode == 201)) {
@@ -299,9 +292,15 @@ class _DetailedEventScreenState extends State<DetailedEventScreen> {
   }
 
   void deleteEvent(String eventId) async {
-    String url ="$urlCelular/$eventId";
-    print("Deletando: $url");
-    Response response = await http.delete(url);
+
+    Map<String, String> mapHeaders = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
+    };
+
+    Response response = await http.delete("$url/events/$eventId", headers: mapHeaders);
+    print("Deletando: $url/events/$eventId");
     int statusCode = response.statusCode;
     print("StatusCode:$statusCode");
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,8 +7,8 @@ import 'package:ufpr_convida/modelos/evento.dart';
 import 'package:http/http.dart' as http;
 import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
+import 'package:ufpr_convida/util/globals.dart' as globals;
 
-String urlCelular = "http://10.0.2.2:8080/events";
 DateTime parsedDateEvent = DateTime.now();
 DateTime parsedDateInit = DateTime.now();
 DateTime parsedDateEnd = DateTime.now();
@@ -35,6 +36,8 @@ class alterEvent extends StatefulWidget {
 class _alterEventState extends State<alterEvent> {
   Event event;
   _alterEventState(this.event);
+
+  String url = globals.URL;
 
   List _types = ["Reunião","Festa","Formatura","Indefinido"];
   List<DropdownMenuItem<String>> _dropDownMenuItemsTypes;
@@ -491,7 +494,7 @@ class _alterEventState extends State<alterEvent> {
                           String stringPut = json.encode(newPut.toMap());
                           print(stringPut);
 
-                          Put p = await createPut("$urlCelular/${event.id}",body: stringPut);
+                          Put p = await createPut("$url/events/${event.id}",body: stringPut);
                           Navigator.of(context).push(new MaterialPageRoute(
                               builder: (BuildContext context) {
                                 return new telaPrincipal();
@@ -618,7 +621,8 @@ Future<Put> createPut(String url, {String body}
     /*Aqui tem que ter HEADERS?*/) async {
   Map<String, String> mapHeaders = {
     "Accept": "application/json",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
   };
 
   return http

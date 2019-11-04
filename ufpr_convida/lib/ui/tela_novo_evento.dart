@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:async' as prefix0;
 import 'dart:convert';
+import 'dart:io';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,11 +12,7 @@ import 'package:ufpr_convida/modelos/location.dart';
 import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
-
-
-String urlCelular = "http://10.0.2.2:8080/events";
-//"http://192.168.0.107:8080/events";
-//String urlNotebook = "http://10.0.2.2:8080/events";
+import 'package:ufpr_convida/util/globals.dart' as globals;
 
 var coord = null;
 String dateEvent;
@@ -90,7 +87,8 @@ Future<Post> createPost(String url, {String body}
     /*Aqui tem que ter HEADERS?*/) async {
   Map<String, String> mapHeaders = {
     "Accept": "application/json",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
   };
 
   return http
@@ -119,6 +117,7 @@ class telaNovoEvento extends StatefulWidget {
 class _telaNovoEventoState extends State<telaNovoEvento> {
   Location location;
 
+  String url = globals.URL;
   final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss");
   final DateFormat showDate = DateFormat("dd/MM/yyyy HH:mm");
   String showDateEvent = "Informe a Data do Evento";
@@ -567,7 +566,7 @@ class _telaNovoEventoState extends State<telaNovoEvento> {
                               String post1 = json.encode(newPost.toMap());
                               print(post1);
                               Post p = await createPost(
-                       /*>>>>*/   urlCelular,
+                       /*>>>>*/   "$url/events",
                                   body: post1);
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (BuildContext context) {

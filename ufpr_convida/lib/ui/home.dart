@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ufpr_convida/ui/tela_principal.dart';
+import 'package:ufpr_convida/modelos/AccountCredentials.dart';
+import 'package:http/http.dart' as http;
+import 'package:ufpr_convida/util/globals.dart' as globals;
 
 class Home extends StatefulWidget {
   @override
@@ -11,6 +15,7 @@ class _HomeState extends State<Home> {
   //Variáveis da Tela, controladores para saber quais são os imputs do usuário
   final TextEditingController _usuarioController = new TextEditingController();
   final TextEditingController _senhaController = new TextEditingController();
+  String url = globals.URL;
 
   String hint = "GRR:";
   int selectedRadio;
@@ -190,36 +195,75 @@ class _HomeState extends State<Home> {
   }
 
   //Método que será chamado quando o usuario clicar no botao ENTRAR
-  void _logar() {
+  void _logar() async {
     if (_usuarioController.text.isNotEmpty &&
         _senhaController.text.isNotEmpty) {
+      AccountCredentials account = new AccountCredentials(_usuarioController.text, _senhaController.text);
+
+      String postBody = json.encode(account.toJson());
+      print("POST: $postBody");
+
+      String status = await createPost("$url/login", body: postBody);
+      //Verificação
+      if (status == "OK"){
+        globals.userName = _usuarioController.text;
+        _abrirTela(context);
+      }
+      else if (status == "ERRO"){
+        var alert = AlertDialog(
+          title: Text(
+            "Login Incorreto!",
+            style: TextStyle(color: Colors.redAccent, fontSize: 18.0),
+          ),
+          content: Text("Usuario ou Senha inválido(s)"),
+          actions: <Widget>[
+            FlatButton(
+                onPressed: () {
+                  setState(() {
+                    //Limpa os campos
+                    _senhaController.clear();
+                    _usuarioController.clear();
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text("OK!")),
+          ],
+        );
+        showDialog(context: context, builder: (context) => alert);
+      }
+      else
+        throw Exception("Erro de login");
+
       //Chama outra página depois de tratar adquadamente
       // a entrada de dados!
-      _abrirTela(context);
-    }
-    //Caso não informado alguns dos campos:
-    //Mostrará um Alerta informando ao usuario o que deve ser feito.
-    else {
-      var alert = AlertDialog(
-        title: Text(
-          "Campo vazio!",
-          style: TextStyle(color: Colors.redAccent, fontSize: 18.0),
-        ),
-        content: Text("Favor digitar seu GRR e Senha"),
-        actions: <Widget>[
-          FlatButton(
-              onPressed: () {
-                setState(() {
-                  //Limpa os campos
-                  _senhaController.clear();
-                  _usuarioController.clear();
-                });
-                Navigator.pop(context);
-              },
-              child: Text("OK!")),
-        ],
-      );
-      showDialog(context: context, builder: (context) => alert);
+
+
+
     }
   }
+
+  Future <String> createPost(String url, {String body}
+      /*Aqui tem que ter HEADERS?*/) async {
+    Map<String, String> mapHeaders = {
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    };
+
+    return http.post(url, body: body, headers: mapHeaders).then((http.Response response) {
+      final int statusCode = response.statusCode;
+      var j = json.decode(response.body);
+      String tkn = j["token"];
+      print("statusCode ${response.statusCode} - Token recebido:$tkn");
+
+      globals.token = tkn;
+
+
+      if ((statusCode == 200) || (statusCode == 201)) {
+        return "OK"; //Post.fromJson(json.decode(response.body));
+      } else {
+        return "ERRO";
+      }
+    });
+  }
+
 }

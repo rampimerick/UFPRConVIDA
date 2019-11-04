@@ -1,18 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ufpr_convida/ui/tela_configuracoes.dart';
 import 'package:ufpr_convida/ui/tela_eventos.dart';
 import 'package:ufpr_convida/ui/tela_mapa.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'my_events_screen.dart';
-
-String urlCelular = "http://10.0.2.2:8080/events";
-    //"http://192.168.0.107:8080/events";
-//String urlNotebook = "http://10.0.2.2:8080/events";
+import 'package:ufpr_convida/util/globals.dart' as globals;
 
 class telaPrincipal extends StatefulWidget {
   @override
@@ -22,6 +17,7 @@ class telaPrincipal extends StatefulWidget {
 class _telaPrincipalState extends State<telaPrincipal> {
   int _indexAtual = 0;
   Completer<GoogleMapController> _controller = Completer();
+//  String urlCelular = "http://10.0.2.2:8080/events";
 //  GET USER
 //  Future<List> getUser() async {
 //    String apiUrl = "http://192.168.0.103:8080/users/20190000";
@@ -72,7 +68,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
       child: Scaffold(
         appBar: AppBar(
           //No título terá o nome do Usurio que ele poderá definir
-          title: Text("Bem vindo 'Fulano de Tal'"),
+          title: Text("Bem vindo \"${globals.userName}\""),
           //Estou usando Theme por isso não precisa declarar cores
           //Theme esta na Main.dart
           //backgroundColor: Colors.blueAccent,
@@ -83,11 +79,11 @@ class _telaPrincipalState extends State<telaPrincipal> {
           child: ListView(
             children: <Widget>[
               new UserAccountsDrawerHeader(
-                accountName: Text("Fulano de Tal"),
-                accountEmail: Text("taldefulano@gmail.com"),
+                accountName: Text("${globals.userName}"),
+                accountEmail: Text("${globals.userName}@mail.com"),
                 currentAccountPicture: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Text("F"),
+                  child: Text("${globals.userName[0].toUpperCase()}"),
                 ),
               ),
               new ListTile(
@@ -110,6 +106,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
                 title: Text("Logout"),
                 trailing: Icon(Icons.chevron_left),
                 onTap: () {
+                  globals.token = "";
                   Navigator.of(context).pop();
                   Navigator.of(context).pushNamed("/login");
                 }
