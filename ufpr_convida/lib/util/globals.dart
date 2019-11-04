@@ -1,7 +1,7 @@
 library my_prj.globals;
 
 String token = "";
-String URL = "http://192.168.43.170:8080";
+String URL = "http://192.168.43.122:8080";
 String userName;
 
 //10.0.2.2

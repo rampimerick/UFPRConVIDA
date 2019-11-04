@@ -19,12 +19,12 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         }else if("admin".equals(username)) {
             return new User("admin","$2a$10$gz9USVopohQnQ6piI8Qv7OEt1RFe/Gewp.jq00Z1lcEf6HHHBigOq",new ArrayList<>());
-        }else {
+        }else if("servidor".equals(username)){
+            return new User("servidor", "$2a$10$bN4sPtX5Tkj91hedFlWYqewB.yzCKoHICzEdkLKuz3XgYEDsz6H/y", new ArrayList<>() );
+        }
+        else {
             throw new UsernameNotFoundException("User not found");
 
         }
-
-
     }
-
 }
