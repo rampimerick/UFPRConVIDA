@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
+import 'package:http/http.dart' as http;
+import 'package:ufpr_convida_2/app/shared/globals/globals.dart' as globals;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:uuid/uuid.dart';
+
 
 class MapWidget extends StatefulWidget {
   @override
@@ -11,8 +15,12 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
+
   MapType _mapType;
   Completer<GoogleMapController> _controller = Completer();
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  String _url = globals.URL;
+  var randID = Uuid();
 
   void initState() {
     super.initState();
@@ -73,7 +81,6 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Widget _googleMap(BuildContext context, double lat, double lng) {
-
     return Container(
       //height: MediaQuery.of(context).size.height,
       //width: MediaQuery.of(context).size.width,
@@ -86,16 +93,19 @@ class _MapWidgetState extends State<MapWidget> {
             CameraPosition(target: LatLng(lat,lng), zoom: 12),
 
         onMapCreated: (GoogleMapController controller) async {
+          //FutureBuilder maybe..:
           //markers = await getMarkers(context);
+          //print(markers);
           _controller.complete(controller);
         },
 
         onLongPress: (latlang) {
           //_addMarkerLongPressed(latlang);
+          print(latlang);
           Navigator.pop(context);
-          Navigator.pushNamed(context, "/new-event");
+          Navigator.pushNamed(context, "/new-event", arguments: latlang);
         },
-        //markers: Set<Marker>.of(markers.values),
+        markers: Set<Marker>.of(markers.values),
         //onLongPress: ,
       ),
     );
@@ -130,8 +140,63 @@ class _MapWidgetState extends State<MapWidget> {
 
   Future<LocationData> _getCurrentUserLocation() async{
     final locData = await Location().getLocation();
+    markers = await getMarkers(context);
+
     print(locData.latitude);
     print(locData.longitude);
+    //await Future.delayed(Duration(: 2));
     return locData;
   }
+
+  Future <Map<MarkerId, Marker>> getMarkers(BuildContext context) async {
+
+    http.Response response = await http.get("$_url/events");
+    print("StatusCode:${response.statusCode}");
+    //Caso vir código 200, OK!
+    var jsonEvents;
+    if ((response.statusCode == 200) || (response.statusCode == 201)) {
+      jsonEvents = json.decode(response.body);
+    } else {
+      throw Exception("Falhou!");
+    }
+
+    Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+    MarkerId markerId;
+    LatLng location;
+
+    for (var e in jsonEvents){
+
+      print("Criando markers..");
+      var id = randID.v1();
+      markerId = MarkerId("$id");
+      location = LatLng(e["lat"], e["lng"]);
+      double color;
+      String type = e["type"];
+      //Marker color:
+      if (type == "Reunião"){
+        color = 120.0;
+      } else if (type == "Festa"){
+        color = 60.0;
+      } else if (type == "Indefinido"){
+        color = 210.0;
+      } else {
+        color = 0.0;
+      }
+
+      Marker marker = Marker(
+        markerId: markerId,
+        draggable: false,
+        position: location,
+        infoWindow: InfoWindow(title: e["name"], snippet: e["link"]),
+        icon: BitmapDescriptor.defaultMarkerWithHue(color),
+        onTap: () => null
+      );
+
+      markers[markerId] = marker;
+
+    }
+    return markers;
+  }
+
+
 }

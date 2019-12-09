@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:ufpr_convida_2/app/shared/globals/globals.dart' as globals;
-
+import 'package:ufpr_convida_2/app/shared/models/login.dart';
+import 'package:ufpr_convida_2/app/shared/models/user.dart';
 
 class LoginWidget extends StatefulWidget {
   @override
@@ -12,7 +15,7 @@ class _LoginWidgetState extends State<LoginWidget> {
   final _formKey = GlobalKey<FormState>();
 
   //Controllers
-  final TextEditingController _loginController = new TextEditingController();
+  final TextEditingController _usernameController = new TextEditingController();
   final TextEditingController _passwordController = new TextEditingController();
   final String msg = 'criar um evento!';
 
@@ -44,7 +47,7 @@ class _LoginWidgetState extends State<LoginWidget> {
             ),
           ),
           //Login
-          loginInput(),
+          usernameInput(),
 
           //Password
           passwordInput(),
@@ -66,10 +69,13 @@ class _LoginWidgetState extends State<LoginWidget> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState.validate()) {
-                                // If the form is valid, go to first page
-                                Navigator.pushNamed(context,'/main');
+                                // If the form is valid, must authenticate
+//
+                                User u = await postLoginUser();
+                                print("User = name: ${u.name} lastname: ${u.lastName} email: ${u.email} grr: ${u.grr} password: ${u.password}");
+                                Navigator.popAndPushNamed(context, '/main');
                               }
                             },
                             padding: EdgeInsets.fromLTRB(60, 12, 60, 12),
@@ -106,16 +112,56 @@ class _LoginWidgetState extends State<LoginWidget> {
     ));
   }
 
-  Padding loginInput() {
+  Future<User> postLoginUser() async {
+    AccountCredentials l = new AccountCredentials(
+      username: _usernameController.text,
+      password: _passwordController.text,
+    );
+
+    String loginJson = json.encode(l.toJson());
+    print(loginJson);
+    print("Post em $_url/login");
+
+    Map<String, String> mapHeaders = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      //HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
+    };
+    User success = await http
+        .post("$_url/login", body: loginJson, headers: mapHeaders)
+        .then((http.Response response) {
+      final int statusCode = response.statusCode;
+      if ((statusCode == 200) || (statusCode == 201)) {
+        print("Post Login Success!");
+        var j = json.decode(response.body);
+        globals.token = j["token"];
+        globals.userName = _usernameController.text;
+
+        User u = new User(
+            name: "Sucessso",
+            lastName: "Sucesso",
+            password: _passwordController.text,
+            email: "sucesso@mail.com",
+            grr: _usernameController.text);
+        return u;
+
+      } else {
+        throw new Exception(
+            "Error while fetching data, status code: $statusCode");
+      }
+    });
+    return success;
+  }
+
+  Padding usernameInput() {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextFormField(
-        controller: _loginController,
+        controller: _usernameController,
         decoration: InputDecoration(
             hintText: "Email ou GRR: ",
             border:
                 OutlineInputBorder(borderRadius: BorderRadius.circular(4.5)),
-
             icon: Icon(Icons.person)),
         //Validations:
         validator: (value) {
@@ -150,3 +196,5 @@ class _LoginWidgetState extends State<LoginWidget> {
     );
   }
 }
+
+

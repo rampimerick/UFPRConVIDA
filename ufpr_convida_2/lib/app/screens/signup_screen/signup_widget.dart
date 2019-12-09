@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ufpr_convida_2/app/shared/globals/globals.dart' as globals;
+import 'package:ufpr_convida_2/app/shared/models/user.dart';
 
 class SignUpWidget extends StatefulWidget {
   @override
@@ -33,7 +36,6 @@ class _SignUpWidgetState extends State<SignUpWidget> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -54,70 +56,13 @@ class _SignUpWidgetState extends State<SignUpWidget> {
               ),
             ),
             //User first name:
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: _userFirstNameController,
-                decoration: InputDecoration(
-                    hintText: "Nome: ",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4.5)),
-                    icon: Icon(Icons.person)),
-                //Validations:
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Favor entre com seu Nome';
-                  }
-                  return null;
-                },
-              ),
-            ),
+            userFirstName(),
 
             //User last name
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: _userLastNameController,
-                decoration: InputDecoration(
-                    hintText: "Sobrenome: ",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4.5)),
-                    icon: Icon(
-                      Icons.navigate_next,
-                      color: Colors.white,
-                    )),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Favor entre com seu Sobrenome';
-                  }
-                  return null;
-                },
-              ),
-            ),
+            userLastName(),
 
             //User GRR:
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                  controller: _userGrrController,
-                  decoration: InputDecoration(
-                    hintText: "Seu GRR:",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4.5)),
-                    //),
-                    icon: Icon(Icons.navigate_next, color: Colors.white,),
-                  ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Favor entre com seu GRR';
-                  }
-                  if (!value.contains('GRR')){
-                    return 'GRR inválido';
-                  }
-                  return null;
-                },
-              ),
-            ),
+            userGrr(),
             //User Birthday
             Padding(
                 padding: const EdgeInsets.fromLTRB(47, 8, 8, 8),
@@ -175,67 +120,15 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                     ),
                   ),
                 )),
+
             //User email:
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: _userEmailController,
-                decoration: InputDecoration(
-                    hintText: "Email: ",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4.5)),
-                    icon: Icon(Icons.email)),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Favor entre com seu E-mail';
-                  }
-                  if (!(value.contains("@"))){
-                    return 'E-mail inválido';
-                  }
-                  return null;
-                },
-              ),
-            ),
+            userEmail(),
 
             //User password
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: _userPasswordController,
-                decoration: InputDecoration(
-                    hintText: "Senha: ",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4.5)),
-                    icon: Icon(Icons.lock)),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Favor entre com sua Senha';
-                  }
-                  return null;
-                },
-                obscureText: true,
-              ),
-            ),
+            userPassword(),
 
             //Confirm password:
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: _userPassConfirmController,
-                decoration: InputDecoration(
-                    hintText: "Confirme sua senha: ",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4.5)),
-                    icon: Icon(Icons.lock)),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Favor entre com sua Senha';
-                  }
-                  return null;
-                },
-                obscureText: true,
-              ),
-            ),
+            userConfirmPassword(),
 
             //Buttons:
             Container(
@@ -264,12 +157,11 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState.validate()) {
                             if(_userPassConfirmController.text.compareTo(_userPasswordController.text) == 0){
-
+                              User u = await postNewUser();
                             }
-                            // If the form is valid...
                           }
                         },
                         padding: EdgeInsets.fromLTRB(43, 12, 43, 12),
@@ -286,10 +178,181 @@ class _SignUpWidgetState extends State<SignUpWidget> {
       ),
     );
   }
+  
+  Future<User> postNewUser() async {
+    User u = new User(
+        name: _userFirstNameController.text,
+        lastName: _userLastNameController.text,
+        grr: _userGrrController.text,
+        email: _userEmailController.text,
+        password: _userPasswordController.text
+    );
+
+    String userJson = json.encode(u.toJson());
+    print(userJson);
+    print("Post em $_url/user");
+
+    Map<String, String> mapHeaders = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      //HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
+    };
+
+    User success = await http
+        .post("$_url/user", body: userJson, headers: mapHeaders)
+        .then((http.Response response) {
+      final int statusCode = response.statusCode;
+      if ((statusCode == 200) || (statusCode == 201)) {
+        print("Post User Success!");
+        return User.fromJson(json.decode(response.body));
+      } else {
+        throw new Exception("Error while fetching data, status code: $statusCode");
+      }
+    });
+
+    return success;
+  }
+
+  Padding userConfirmPassword() {
+    return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: _userPassConfirmController,
+              decoration: InputDecoration(
+                  hintText: "Confirme sua senha: ",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4.5)),
+                  icon: Icon(Icons.lock)),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Favor entre com sua Senha';
+                }
+                return null;
+              },
+              obscureText: true,
+            ),
+          );
+  }
+
+  Padding userPassword() {
+    return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: _userPasswordController,
+              decoration: InputDecoration(
+                  hintText: "Senha: ",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4.5)),
+                  icon: Icon(Icons.lock)),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Favor entre com sua Senha';
+                }
+                return null;
+              },
+              obscureText: true,
+            ),
+          );
+  }
+
+  Padding userEmail() {
+    return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: _userEmailController,
+              decoration: InputDecoration(
+                  hintText: "Email: ",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4.5)),
+                  icon: Icon(Icons.email)),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Favor entre com seu E-mail';
+                }
+                if (!(value.contains("@"))){
+                  return 'E-mail inválido';
+                }
+                return null;
+              },
+            ),
+          );
+  }
+
+  Padding userGrr() {
+    return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+                controller: _userGrrController,
+                decoration: InputDecoration(
+                  hintText: "Seu GRR:",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4.5)),
+                  //),
+                  icon: Icon(Icons.navigate_next, color: Colors.white,),
+                ),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Favor entre com seu GRR';
+                }
+                if (!value.contains('GRR')){
+                  return 'GRR inválido';
+                }
+                return null;
+              },
+            ),
+          );
+  }
+
+  Padding userLastName() {
+    return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: _userLastNameController,
+              decoration: InputDecoration(
+                  hintText: "Sobrenome: ",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4.5)),
+                  icon: Icon(
+                    Icons.navigate_next,
+                    color: Colors.white,
+                  )),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Favor entre com seu Sobrenome';
+                }
+                return null;
+              },
+            ),
+          );
+  }
+
+  Padding userFirstName() {
+    return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: _userFirstNameController,
+              decoration: InputDecoration(
+                  hintText: "Nome: ",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4.5)),
+                  icon: Icon(Icons.person)),
+              //Validations:
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Favor entre com seu Nome';
+                }
+                return null;
+              },
+            ),
+          );
+  }
+
+
 
   Future<DateTime> _selectedDate(BuildContext context) => showDatePicker(
       context: context,
       initialDate: DateTime.now().add(Duration(seconds: 1)),
       firstDate: DateTime(1900),
-      lastDate: DateTime(2100));
+      lastDate: DateTime(2100)
+  );
 }

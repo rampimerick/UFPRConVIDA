@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:ufpr_convida_2/app/shared/models/evento.dart';
+import 'package:ufpr_convida_2/app/shared/models/event.dart';
 import 'package:ufpr_convida_2/app/shared/globals/globals.dart' as globals;
 import 'package:http/http.dart' as http;
 
@@ -101,7 +101,9 @@ class _EventsWidgetState extends State<EventsWidget> {
                                 ],
                               ),
                               onTap: () {
-                                Navigator.pushNamed(context, '/event');
+                                Navigator.pushNamed(context, '/event', arguments: {
+                                  'id' : values[index].id
+                                });
                               },
                             ),
                           ],
