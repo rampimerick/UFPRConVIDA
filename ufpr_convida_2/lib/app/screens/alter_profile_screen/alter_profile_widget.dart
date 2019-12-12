@@ -1,22 +1,32 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ufpr_convida_2/app/shared/globals/globals.dart' as globals;
+import 'package:ufpr_convida_2/app/shared/models/login.dart';
 import 'package:ufpr_convida_2/app/shared/models/user.dart';
 
-class SignUpWidget extends StatefulWidget {
+class AlterProfileWidget extends StatefulWidget {
+  User user;
+
+  AlterProfileWidget({Key key, @required this.user}) : super(key: key);
+
   @override
-  _SignUpWidgetState createState() => _SignUpWidgetState();
+  _AlterProfileWidgetState createState() => _AlterProfileWidgetState(user);
 }
 
-class _SignUpWidgetState extends State<SignUpWidget> {
+class _AlterProfileWidgetState extends State<AlterProfileWidget> {
+  User user;
+
+  _AlterProfileWidgetState(this.user);
+
   String _url = globals.URL;
   final _formKey = GlobalKey<FormState>();
   bool created = false;
 
   final DateFormat formatter = new DateFormat.yMMMMd("pt_BR");
-  final DateFormat dateFormat = new DateFormat("yyyy-MM-ddTHH:mm:ss");
+  final DateFormat postFormat = new DateFormat("yyyy-MM-ddTHH:mm:ss");
   String showDateUser = "";
   String dateUser;
 
@@ -30,10 +40,33 @@ class _SignUpWidgetState extends State<SignUpWidget> {
       new TextEditingController();
   final TextEditingController _userEmailController =
       new TextEditingController();
+  final TextEditingController _userOldPasswordController =
+      new TextEditingController();
   final TextEditingController _userPasswordController =
       new TextEditingController();
   final TextEditingController _userPassConfirmController =
       new TextEditingController();
+
+  bool isSwitchedPassword = false;
+
+  @override
+  void initState() {
+    _userGrrController.text = user.grr;
+    _userFirstNameController.text = user.name;
+    _userLastNameController.text = user.lastName;
+    _userEmailController.text = user.email;
+
+    DateTime parsedBirth;
+
+    if (user.birth != null) {
+      parsedBirth = DateTime.parse(user.birth);
+      selectedDateUser = parsedBirth;
+      dateUser = postFormat.format(parsedBirth);
+      showDateUser = formatter.format(parsedBirth);
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +81,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
               child: Container(
                 alignment: Alignment.center,
                 child: Text(
-                  "Cadastro",
+                  "Perfil",
                   style: TextStyle(
                       color: Color(0xFF295492), //Color(0xFF8A275D),
                       fontSize: 32.0,
@@ -82,7 +115,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                       setState(() {
                         this.selectedDateUser = DateTime(selectedDate.year,
                             selectedDate.month, selectedDate.day);
-                        dateUser = dateFormat.format(selectedDateUser);
+                        dateUser = postFormat.format(selectedDateUser);
                         showDateUser = formatter.format(selectedDateUser);
                         print("Formato data post: $dateUser");
                       });
@@ -123,11 +156,39 @@ class _SignUpWidgetState extends State<SignUpWidget> {
             //User email:
             userEmail(),
 
-            //User password
-            userPassword(),
+            //Switch
+            Padding(
+              padding: const EdgeInsets.fromLTRB(47, 8.0, 8.0, 8.0),
+              child: Row(
+                children: <Widget>[
+                  Text("Deseja alterar sua senha?",
+                      style: TextStyle(fontSize: 16, color: Colors.black54)),
+                  Switch(
+                      value: isSwitchedPassword,
+                      onChanged: (value) {
+                        setState(() {
+                          print("Executou um setState");
+                          isSwitchedPassword = value;
+                        });
+                      }),
+                ],
+              ),
+            ),
 
-            //Confirm password:
-            userConfirmPassword(),
+            Container(
+              child: isSwitchedPassword == true
+                  ? Container(
+                      child: Column(
+                        children: <Widget>[
+                          userOldPassword(),
+                          userPassword("Nova senha:"),
+                          userConfirmPassword("Confirme nova senha:"),
+                        ],
+                      ),
+                    )
+                  : userPassword("Senha:"),
+            ),
+            //User password
 
             //Buttons:
             Container(
@@ -142,8 +203,14 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
                         ),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed('/main'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.of(context).pushNamed("/main");
+                        },
                         padding: EdgeInsets.fromLTRB(45, 12, 45, 12),
                         child: Text('Cancelar',
                             style:
@@ -158,22 +225,30 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                           borderRadius: BorderRadius.circular(24),
                         ),
                         onPressed: () async {
-                          if (created){
-                            Navigator.of(context).popAndPushNamed("/login");
+                          int ok = 0;
+                          if (created) {
+                            Navigator.of(context).pushNamed("/main");
                           }
 
-                          if ((_formKey.currentState.validate()) && (created == false)) {
-                            if (_userPassConfirmController.text
-                                    .compareTo(_userPasswordController.text) ==
-                                0) {
-                              String success = await postNewUser();
-                              _showDialog(success);
+                          if ((_formKey.currentState.validate()) &&
+                              (created == false)) {
+
+                            bool correct = await passCheck();
+
+                            if (correct) {
+                              String success = await putUser();
+                              String desc = "Pressione 'Ok' para continar";
+                              _showDialog(success, desc, true);
                               created = true;
+                            } else {
+                              String error = "Alguma senha não está correta";
+                              String desc = "Pressione 'Ok' e tente novamente";
+                              _showDialog(error, desc, false);
                             }
                           }
                         },
                         padding: EdgeInsets.fromLTRB(43, 12, 43, 12),
-                        child: Text('Confirmar',
+                        child: Text('Alterar',
                             //Color(0xFF295492),(0xFF8A275D)
                             style:
                                 TextStyle(color: Colors.white, fontSize: 18)),
@@ -186,20 +261,46 @@ class _SignUpWidgetState extends State<SignUpWidget> {
       ),
     );
   }
-  void _showDialog(String s) {
+
+  Padding userOldPassword() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        controller: _userOldPasswordController,
+        decoration: InputDecoration(
+            hintText: "Senha Antiga: ",
+            border:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(4.5)),
+            icon: Icon(Icons.lock)),
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'Favor entre com sua Antiga';
+          }
+          return null;
+        },
+        obscureText: true,
+      ),
+    );
+  }
+
+  void _showDialog(String s, String desc, bool ok) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: new Text(s),
-          content: new Text("Prescione 'Ok' para continar"),
+          content: new Text(desc),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("Ok"),
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.of(context).popAndPushNamed("/login");
+                if (ok) {
+                  Navigator.pop(context);
+                  Navigator.of(context).popAndPushNamed("/login");
+                } else {
+                  Navigator.pop(context);
+                }
               },
             ),
           ],
@@ -208,10 +309,42 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     );
   }
 
+  Future<bool> passCheck() async {
+    Map<String, String> mapHeaders = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
+    };
 
-  Future<String> postNewUser() async {
+    AccountCredentials ac = new AccountCredentials(
+        password: _userPasswordController.text, username: user.grr);
+    String acJson = jsonEncode(ac);
+    print(acJson);
+
+    bool correct = await http
+        .put("$_url/users/checkpass", body: acJson, headers: mapHeaders)
+        .then((http.Response response) {
+      final int statusCode = response.statusCode;
+
+      print("-------------------------------------------------------");
+      print("Request on: $_url/users/checkpass");
+      print("Status Code: ${response.statusCode}");
+      print("Checking User Password...");
+      print("-------------------------------------------------------");
+
+      if ((statusCode == 200) || (statusCode == 201)) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    return correct;
+  }
+
+  Future<String> putUser() async {
     User u = new User(
-        grr: _userGrrController.text,
+        grr: user.grr,
         name: _userFirstNameController.text,
         lastName: _userLastNameController.text,
         password: _userPasswordController.text,
@@ -220,21 +353,27 @@ class _SignUpWidgetState extends State<SignUpWidget> {
 
     String userJson = json.encode(u.toJson());
     print(userJson);
-    print("Post em $_url/users");
+    print("Put em $_url/users/${user.grr}");
 
     Map<String, String> mapHeaders = {
       "Accept": "application/json",
       "Content-Type": "application/json",
-      //HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
+      HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
     };
 
     String s = await http
-        .post("$_url/users", body: userJson, headers: mapHeaders)
+        .put("$_url/users/${user.grr}", body: userJson, headers: mapHeaders)
         .then((http.Response response) {
       final int statusCode = response.statusCode;
-      if ((statusCode == 200) || (statusCode == 201)) {
-        print("Post User Success!");
-        return "Usuário criado com sucesso!";
+
+      print("-------------------------------------------------------");
+      print("Request on: $_url/users/${user.grr}");
+      print("Status Code: ${response.statusCode}");
+      print("Putting User Alteration...");
+      print("-------------------------------------------------------");
+
+      if (statusCode == 204) {
+        return "Usuário Alterado com sucesso!";
       } else {
         throw new Exception(
             "Error while fetching data, status code: $statusCode");
@@ -243,13 +382,13 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     return s;
   }
 
-  Padding userConfirmPassword() {
+  Padding userConfirmPassword(String hint) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
         controller: _userPassConfirmController,
         decoration: InputDecoration(
-            hintText: "Confirme sua senha: ",
+            hintText: hint,
             border:
                 OutlineInputBorder(borderRadius: BorderRadius.circular(4.5)),
             icon: Icon(Icons.lock)),
@@ -264,13 +403,13 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     );
   }
 
-  Padding userPassword() {
+  Padding userPassword(String hint) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
         controller: _userPasswordController,
         decoration: InputDecoration(
-            hintText: "Senha: ",
+            hintText: hint,
             border:
                 OutlineInputBorder(borderRadius: BorderRadius.circular(4.5)),
             icon: Icon(Icons.lock)),
@@ -312,6 +451,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
+        enabled: false,
         controller: _userGrrController,
         decoration: InputDecoration(
           hintText: "Seu GRR:",
@@ -322,18 +462,6 @@ class _SignUpWidgetState extends State<SignUpWidget> {
             color: Colors.white,
           ),
         ),
-        validator: (value) {
-          if ((value.contains('@') )||(value.contains('!') )|| (value.contains('%'))){
-            return 'GRR inválido';
-          }
-          if (value.isEmpty) {
-            return 'Favor entre com seu GRR dessa forma: "grrXXXXXXXX"';
-          }
-          if (!value.contains('grr')) {
-            return 'Favor entre com seu GRR dessa forma: "grrXXXXXXXX"';
-          }
-          return null;
-        },
       ),
     );
   }

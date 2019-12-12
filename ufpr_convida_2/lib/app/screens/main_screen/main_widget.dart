@@ -1,7 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:ufpr_convida_2/app/screens/alter_profile_screen/alter_profile_widget.dart';
 import 'package:ufpr_convida_2/app/screens/events_screen/events_widget.dart';
+import 'package:ufpr_convida_2/app/screens/favorites_screen/favorites_widget.dart';
 import 'package:ufpr_convida_2/app/screens/map_screen/map_widget.dart';
+import 'package:ufpr_convida_2/app/screens/my_events_screen/my_events_widget.dart';
 import 'package:ufpr_convida_2/app/shared/globals/globals.dart' as globals;
+import 'package:ufpr_convida_2/app/shared/models/user.dart';
 
 class MainWidget extends StatefulWidget {
   @override
@@ -12,7 +19,10 @@ class _MainWidgetState extends State<MainWidget> {
   int _indexAtual = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  Widget _switchSreen(int index) {
+  User user;
+  String _url = globals.URL;
+
+  Widget _switchScreen(int index) {
     switch (index) {
       case 0:
         return new Stack(
@@ -39,6 +49,14 @@ class _MainWidgetState extends State<MainWidget> {
         return EventsWidget();
         break;
 
+      case 2:
+        return FavoritesWidget();
+        break;
+
+      case 3:
+        return MyEventsWidget();
+        break;
+
       default:
         return MapWidget();
     }
@@ -48,35 +66,49 @@ class _MainWidgetState extends State<MainWidget> {
     return FloatingActionButton(
       backgroundColor: Color(0xFF295492),
       mini: true,
-      onPressed: () => _scaffoldKey.currentState.openDrawer(),
+      onPressed: () async {
+        if (globals.token != "") String success = await getUserProfile();
+        _scaffoldKey.currentState.openDrawer();
+      },
       child: Icon(Icons.format_list_bulleted),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      //Drawer é a barra de ferramentas que aparece ao lado
-      key: _scaffoldKey,
-      drawer: globals.token == ''
-          //Drawer without user:
-          ? drawerNoUser()
-          //Drawer of the user:
-          : drawerUser(context),
-      body: _switchSreen(_indexAtual),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _indexAtual,
-        onTap: (value) {
-          _indexAtual = value;
-          setState(() {});
-        },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.map), title: Text("Mapa")),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.list), title: Text("Eventos")),
-//          BottomNavigationBarItem(
-//              icon: Icon(Icons.event_note), title: Text("Meus Eventos")),
-        ],
+    return WillPopScope(
+      //Ends the app
+      onWillPop: () {
+        Navigator.of(context).popAndPushNamed("/login");
+        return null;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        key: _scaffoldKey,
+        drawer: globals.token == ''
+            //Drawer without user:
+            ? drawerNoUser()
+            //Drawer of the user:
+            : drawerUser(context),
+        body: _switchScreen(_indexAtual),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _indexAtual,
+          type: BottomNavigationBarType.fixed,
+          onTap: (value) {
+            setState(() {
+              _indexAtual = value;
+            });
+          },
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.map), title: Text("Mapa")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.list), title: Text("Eventos")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.star), title: Text("Favoritos")),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.event_note), title: Text("Meus Eventos"))
+          ],
+        ),
       ),
     );
   }
@@ -96,8 +128,6 @@ class _MainWidgetState extends State<MainWidget> {
           drawerLogin(),
           drawerSignup(),
           Divider(),
-
-          //O Fechar somente fecha a barra de ferramentas
           ListTile(
             title: Text("Fechar"),
             trailing: Icon(Icons.close),
@@ -110,19 +140,34 @@ class _MainWidgetState extends State<MainWidget> {
 
   Drawer drawerUser(BuildContext context) {
     return new Drawer(
-      //Cada filho é uma opação que ao ser clicado puxará outra tela
       child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text("${globals.userName}"),
-            accountEmail: Text("${globals.userName}@mail.com"),
+            accountName: Text("${globals.name} ${globals.lastName}"),
+            accountEmail: Text("${globals.email}"),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
-              child: Text("${globals.userName[0].toUpperCase()}"),
+              child: Text("${globals.name[0].toUpperCase()}"),
             ),
           ),
 
-          new DrawerProfile(),
+          ListTile(
+            title: Text("Perfil"),
+            trailing: Icon(Icons.person),
+            onTap: () async{
+              if (globals.token != "") String success = await getUserProfile();
+              //Pop Drawer:
+              Navigator.of(context).pop();
+              //Pop Map Screen and push Profile
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AlterProfileWidget(
+                      user: user,
+                    ),
+                  ));
+            },
+          ),
           new DrawerSettings(),
           new DrawerLogout(),
           new Divider(),
@@ -166,6 +211,29 @@ class _MainWidgetState extends State<MainWidget> {
           Navigator.of(context).pushNamed("/signup");
         });
   }
+
+  Future<String> getUserProfile() async {
+    Map<String, String> mapHeaders = {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer ${globals.token}"
+    };
+    String id = globals.userName;
+    user = await http
+        .get("$_url/users/$id", headers: mapHeaders)
+        .then((http.Response response) {
+      final int statusCode = response.statusCode;
+      if ((statusCode == 200) || (statusCode == 201)) {
+        print("Success loading user profile!");
+        return User.fromJson(jsonDecode(response.body));
+      } else {
+        throw new Exception(
+            "Error while fetching data, status code: $statusCode");
+      }
+    });
+
+    return "Success";
+  }
 }
 
 class DrawerLogout extends StatelessWidget {
@@ -180,8 +248,14 @@ class DrawerLogout extends StatelessWidget {
         trailing: Icon(Icons.chevron_left),
         onTap: () {
           globals.token = "";
+          globals.email = "";
+          globals.name  = "";
+          globals.lastName = "";
+          globals.userName = "";
+
           Navigator.of(context).pop();
-          Navigator.of(context).pushNamed("/login");
+          //Pop Map Screen and push Login
+          Navigator.of(context).popAndPushNamed("/login");
         });
   }
 }
@@ -198,25 +272,8 @@ class DrawerSettings extends StatelessWidget {
       trailing: Icon(Icons.settings),
       onTap: () {
         Navigator.of(context).pop();
-        Navigator.of(context).pushNamed("/settings");
-      },
-    );
-  }
-}
-
-class DrawerProfile extends StatelessWidget {
-  const DrawerProfile({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text("Perfil"),
-      trailing: Icon(Icons.person),
-      onTap: () {
-        Navigator.of(context).pop();
-        Navigator.of(context).pushNamed("/profile");
+        //Pop Map Screen and push Settings
+        Navigator.of(context).popAndPushNamed("/settings");
       },
     );
   }

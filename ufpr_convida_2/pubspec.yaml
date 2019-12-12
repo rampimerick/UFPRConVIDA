@@ -30,6 +30,8 @@ dependencies:
   uuid: 2.0.1
   flushbar: ^1.5.0
   location: ^2.3.5
+  url_launcher: any
+
 
 
 dev_dependencies:
@@ -55,13 +57,12 @@ flutter:
     - assets/logo-ufprconvida.tiff
     - assets/logo-ufprconvida.png
     - assets/logo-ufprconvida-sembordas.png
-    - assets/event-type-1.png
-    - assets/event-type-2.png
-    - assets/event-type-3.png
-    - assets/graduated.png
-    - assets/calendar.png
-    - assets/meeting.png
-    - assets/disco-ball.png
+    - assets/type-art.png
+    - assets/type-graduation.png
+    - assets/type-health.png
+    - assets/type-others.png
+    - assets/type-party.png
+    - assets/type-sport.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

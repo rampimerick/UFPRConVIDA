@@ -10,24 +10,27 @@ import 'package:ufpr_convida_2/app/shared/models/event.dart';
 import 'package:http/http.dart' as http;
 import 'package:ufpr_convida_2/app/shared/models/user.dart';
 
-class NewEventWidget extends StatefulWidget {
+class AlterEventWidget extends StatefulWidget {
+  Event event;
+  AlterEventWidget({Key key, @required this.event}) : super(key: key);
   @override
-  _NewEventWidgetState createState() => _NewEventWidgetState();
+  _AlterEventWidgetState createState() => _AlterEventWidgetState(event);
 }
 
-class _NewEventWidgetState extends State<NewEventWidget> {
+class _AlterEventWidgetState extends State<AlterEventWidget> {
+  Event event;
+  _AlterEventWidgetState(this.event);
+
   String _url = globals.URL;
   final _formKey = GlobalKey<FormState>();
   bool created = false;
   var now = DateTime.now();
-  //Coordenadas do Evento
-  LatLng coords;
 
   //Dates:
   final DateFormat formatter = new DateFormat.yMd("pt_BR");
-  final DateFormat dateFormat = new DateFormat("yyyy-MM-ddTHH:mm:ss");
+  final DateFormat postFormat = new DateFormat("yyyy-MM-ddTHH:mm:ss");
   final DateFormat hourFormat = new DateFormat.Hm();
-  final DateFormat dateAndHour =  new DateFormat.yMd("pt_BR").add_Hm();
+  final DateFormat dateAndHour = new DateFormat.yMd("pt_BR").add_Hm();
 
   String showHrStart = "";
   String showHrEnd = "";
@@ -51,9 +54,16 @@ class _NewEventWidgetState extends State<NewEventWidget> {
   DateTime selectedSubEventEnd = DateTime.now();
 
   //Events Types
-  var _dropDownMenuItemsTypes = ["Saúde", "Esporte e Lazer", "Festas e Comemorações",
-    "Cultura","Acadêmico","Outros",];
-  String _currentType = "Outros";
+  var _dropDownMenuItemsTypes = [
+    "Saúde",
+    "Esporte e Lazer",
+    "Festas e Comemorações",
+    "Cultura",
+    "Acadêmico",
+    "Outros",
+  ];
+
+  String _currentType;
 
   //Switch:
   bool isSwitchedUFPR = false;
@@ -73,15 +83,82 @@ class _NewEventWidgetState extends State<NewEventWidget> {
   final TextEditingController _eventBlocController =
       new TextEditingController();
 
+
+  @override
+  void initState() {
+
+        _eventNameController.text = event.name;
+        _eventTargetController.text = event.target;
+        _eventDescController.text = event.desc;
+        _eventLinkController.text = event.link;
+        _eventSectorController.text = event.sector;
+        _eventBlocController.text = event.bloc;
+
+        DateTime parsedHrStart;
+        DateTime parsedHrEnd;
+        DateTime parsedDateStart;
+        DateTime parsedDateEnd;
+        DateTime parsedSubStart;
+        DateTime parsedSubEnd;
+
+        if (event.hrStart != null) {
+          parsedHrStart = DateTime.parse(event.hrStart);
+          selectedHrEventStart = parsedHrStart;
+          postHrStart = postFormat.format(parsedHrStart);
+          showHrStart = hourFormat.format(parsedHrStart);
+        }
+        if (event.hrEnd != null) {
+          parsedHrEnd = DateTime.parse(event.hrEnd);
+          selectedHrEventEnd = parsedHrEnd;
+          postHrEnd = postFormat.format(parsedHrEnd);
+          showHrEnd = hourFormat.format(parsedHrEnd);
+        }
+        if (event.dateStart != null) {
+          parsedDateStart = DateTime.parse(event.dateStart);
+          selectedHrEventStart = parsedDateStart;
+          postDateEventStart = postFormat.format(parsedDateStart);
+          showDateStart = formatter.format(parsedDateStart);
+        }
+        if (event.dateEnd != null) {
+          parsedDateEnd = DateTime.parse(event.dateEnd);
+          selectedDateEventEnd = parsedDateEnd;
+          postDateEventEnd = postFormat.format(parsedDateEnd);
+          showDateEnd = formatter.format(parsedDateEnd);
+        }
+        if (event.startSub != null) {
+          parsedSubStart = DateTime.parse(event.startSub);
+          selectedSubEventStart = parsedSubStart;
+          postSubEventStart = postFormat.format(parsedSubStart);
+          showSubStart = dateAndHour.format(parsedSubStart);
+        }
+        if (event.endSub != null) {
+          parsedSubEnd = DateTime.parse(event.endSub);
+          selectedSubEventEnd = parsedSubEnd;
+          postSubEventEnd = postFormat.format(parsedSubEnd);
+          showSubEnd = dateAndHour.format(parsedSubEnd);
+        }
+
+        _currentType = event.type;
+
+        if (event.sector == "") {
+          isSwitchedUFPR = false;
+        }
+        else
+          isSwitchedUFPR = true;
+
+        if (event.startSub == "") {
+          isSwitchedSubs = false;
+        }
+        else
+          isSwitchedSubs = true;
+
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    coords = ModalRoute.of(context).settings.arguments as LatLng;
-    if (globals.token == "") {
-      return withoutLogin(context);
-    } else {
+
       return WillPopScope(
         onWillPop: () {
-
           Navigator.of(context).popAndPushNamed("/main");
           return null;
         },
@@ -116,37 +193,36 @@ class _NewEventWidgetState extends State<NewEventWidget> {
 
                 //Event Hour Start:
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(47, 8, 8, 8),
-                  child: Container(
-                    decoration: containerDecoration(),
-                    child: InkWell(
-                      onTap: () async{
-                        final selectedTime = await _selectedTime(context);
-                        if (selectedTime == null) return 0;
+                    padding: const EdgeInsets.fromLTRB(47, 8, 8, 8),
+                    child: Container(
+                      decoration: containerDecoration(),
+                      child: InkWell(
+                        onTap: () async {
+                          final selectedTime = await _selectedTime(
+                              context, selectedHrEventStart);
+                          if (selectedTime == null) return 0;
 
-                        setState(() {
-                          print("${selectedTime.hour} : ${selectedTime.minute}");
+                          setState(() {
+                            print(
+                                "${selectedTime.hour} : ${selectedTime.minute}");
 
-                          this.selectedHrEventStart = DateTime(
-                              now.year,
-                              now.month,
-                              now.day,
-                              selectedTime.hour,
-                              selectedTime.minute
-                          );
-                          postHrStart =
-                              dateFormat.format(selectedHrEventStart);
-                          showHrStart =
-                              hourFormat.format(selectedHrEventStart);
-                          print("Formato data post: $postHrStart");
-
-                        });
-                        return 0;
-                      },
-                      child: eventHourStartOutput(),
-                    ),
-                  )
-                ),
+                            this.selectedHrEventStart = DateTime(
+                                now.year,
+                                now.month,
+                                now.day,
+                                selectedTime.hour,
+                                selectedTime.minute);
+                            postHrStart =
+                                postFormat.format(selectedHrEventStart);
+                            showHrStart =
+                                hourFormat.format(selectedHrEventStart);
+                            print("Formato data post: $postHrStart");
+                          });
+                          return 0;
+                        },
+                        child: eventHourStartOutput(),
+                      ),
+                    )),
 
                 //Event Hour End
                 Padding(
@@ -155,18 +231,18 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                       decoration: containerDecoration(),
                       child: InkWell(
                         onTap: () async {
-                          final selectedTime = await _selectedTime(context);
+                          final selectedTime =
+                              await _selectedTime(context, selectedHrEventEnd);
                           if (selectedTime == null) return 0;
 
                           setState(() {
-                            this.selectedHrEventEnd =
-                                DateTime(
-                                    now.year,
-                                    now.month,
-                                    now.day,
-                                    selectedTime.hour,
-                                    selectedTime.minute);
-                            postHrEnd = dateFormat.format(selectedHrEventEnd);
+                            this.selectedHrEventEnd = DateTime(
+                                now.year,
+                                now.month,
+                                now.day,
+                                selectedTime.hour,
+                                selectedTime.minute);
+                            postHrEnd = postFormat.format(selectedHrEventEnd);
                             showHrEnd = hourFormat.format(selectedHrEventEnd);
                             print("Formato hora post: $postHrEnd");
                           });
@@ -183,7 +259,8 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                       decoration: containerDecoration(),
                       child: InkWell(
                         onTap: () async {
-                          final selectedDate = await _selectedDate(context);
+                          final selectedDate = await _selectedDate(
+                              context, selectedDateEventStart);
                           if (selectedDate == null) return 0;
 
                           setState(() {
@@ -194,7 +271,7 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                                 now.hour,
                                 now.minute);
                             postDateEventStart =
-                                dateFormat.format(selectedDateEventStart);
+                                postFormat.format(selectedDateEventStart);
                             showDateStart =
                                 formatter.format(selectedDateEventStart);
                             print("Formato data post: $postDateEventStart");
@@ -212,11 +289,12 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                       decoration: containerDecoration(),
                       child: InkWell(
                         onTap: () async {
-                          final selectedDate = await _selectedDate(context);
+                          final selectedDate = await _selectedDate(
+                              context, selectedDateEventEnd);
                           if (selectedDate == null) return 0;
 
                           setState(() {
-                            this.selectedDateEventEnd = DateTime(
+                            selectedDateEventEnd = DateTime(
                                 selectedDate.year,
                                 selectedDate.month,
                                 selectedDate.day,
@@ -224,8 +302,9 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                                 now.minute);
                             //Format's:
                             postDateEventEnd =
-                                dateFormat.format(selectedDateEventEnd);
-                            showDateEnd = formatter.format(selectedDateEventEnd);
+                                postFormat.format(selectedDateEventEnd);
+                            showDateEnd =
+                                formatter.format(selectedDateEventEnd);
                             print("Formato data post: $postDateEventEnd");
                           });
                           return 0;
@@ -242,7 +321,6 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                   padding: const EdgeInsets.fromLTRB(47, 8.0, 8.0, 8.0),
                   child: Row(
                     children: <Widget>[
-
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                         child: Container(
@@ -315,22 +393,25 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                                       child: InkWell(
                                         onTap: () async {
                                           final selectedDate =
-                                              await _selectedDate(context);
+                                              await _selectedDate(context,
+                                                  selectedSubEventStart);
                                           if (selectedDate == null) return 0;
 
                                           final selectedTime =
-                                              await _selectedTime(context);
+                                              await _selectedTime(context,
+                                                  selectedSubEventStart);
                                           if (selectedDate == null) return 0;
 
                                           setState(() {
-                                            this.selectedSubEventStart = DateTime(
-                                                selectedDate.year,
-                                                selectedDate.month,
-                                                selectedDate.day,
-                                                selectedTime.hour,
-                                                selectedTime.minute);
+                                            this.selectedSubEventStart =
+                                                DateTime(
+                                                    selectedDate.year,
+                                                    selectedDate.month,
+                                                    selectedDate.day,
+                                                    selectedTime.hour,
+                                                    selectedTime.minute);
                                             //Format's:
-                                            postSubEventStart = dateFormat
+                                            postSubEventStart = postFormat
                                                 .format(selectedSubEventStart);
                                             showSubStart = dateAndHour
                                                 .format(selectedSubEventStart);
@@ -352,11 +433,13 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                                       child: InkWell(
                                         onTap: () async {
                                           final selectedDate =
-                                              await _selectedDate(context);
+                                              await _selectedDate(
+                                                  context, selectedSubEventEnd);
                                           if (selectedDate == null) return 0;
 
                                           final selectedTime =
-                                              await _selectedTime(context);
+                                              await _selectedTime(
+                                                  context, selectedSubEventEnd);
                                           if (selectedDate == null) return 0;
 
                                           setState(() {
@@ -367,7 +450,7 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                                                 selectedTime.hour,
                                                 selectedTime.minute);
                                             //Format's:
-                                            postSubEventEnd = dateFormat
+                                            postSubEventEnd = postFormat
                                                 .format(selectedSubEventEnd);
                                             showSubEnd = dateAndHour
                                                 .format(selectedSubEventEnd);
@@ -423,7 +506,7 @@ class _NewEventWidgetState extends State<NewEventWidget> {
                         },
                         color: Color(0xFF8A275D),
                         child: Text(
-                          "Criar",
+                          "Alterar",
                           style: TextStyle(color: Colors.white, fontSize: 17.0),
                         ),
                       ),
@@ -435,7 +518,6 @@ class _NewEventWidgetState extends State<NewEventWidget> {
           ),
         ),
       );
-    }
   }
 
   Scaffold withoutLogin(BuildContext context) {
@@ -536,11 +618,11 @@ class _NewEventWidgetState extends State<NewEventWidget> {
       }
     });
 
-    if (isSwitchedUFPR == false){
+    if (isSwitchedUFPR == false) {
       _eventBlocController.text = "";
       _eventSectorController.text = "";
     }
-    if (isSwitchedSubs == false){
+    if (isSwitchedSubs == false) {
       postSubEventStart = "";
       postSubEventEnd = "";
     }
@@ -560,21 +642,21 @@ class _NewEventWidgetState extends State<NewEventWidget> {
         startSub: postSubEventStart,
         endSub: postSubEventEnd,
         author: user,
-        lat: coords.latitude,
-        lng: coords.longitude);
+        lat: event.lat,
+        lng: event.lng);
 
     String eventJson = json.encode(p.toJson());
 
     print(eventJson);
-    print("Post em $_url/events");
+    print("Put em $_url/events/${event.id}");
 
     String s = await http
-        .post("$_url/events", body: eventJson, headers: mapHeaders)
+        .put("$_url/events/${event.id}", body: eventJson, headers: mapHeaders)
         .then((http.Response response) {
       final int statusCode = response.statusCode;
       if ((statusCode == 200) || (statusCode == 201)) {
-        print("Post Event Success!");
-        return "Evento criado com sucesso!";
+        print("Put Event Success!");
+        return "Evento Alterado com sucesso!";
       } else {
         throw new Exception(
             "Error while fetching data, status code: $statusCode");
@@ -671,8 +753,8 @@ class _NewEventWidgetState extends State<NewEventWidget> {
       padding: const EdgeInsets.fromLTRB(47, 8.0, 8.0, 8.0),
       child: Row(
         children: <Widget>[
-          Text("Seu evento tem datas de inscrições?",style: TextStyle(
-              fontSize: 16, color: Colors.black54)),
+          Text("Seu evento tem datas de inscrições?",
+              style: TextStyle(fontSize: 16, color: Colors.black54)),
           Switch(
               value: isSwitchedSubs,
               onChanged: (value) {
@@ -691,8 +773,8 @@ class _NewEventWidgetState extends State<NewEventWidget> {
       padding: const EdgeInsets.fromLTRB(47, 8.0, 8.0, 8.0),
       child: Row(
         children: <Widget>[
-          Text("Seu evento é na UFPR?",style: TextStyle(
-              fontSize: 16, color: Colors.black54)),
+          Text("Seu evento é na UFPR?",
+              style: TextStyle(fontSize: 16, color: Colors.black54)),
           Switch(
               value: isSwitchedUFPR,
               onChanged: (value) {
@@ -855,6 +937,7 @@ class _NewEventWidgetState extends State<NewEventWidget> {
       ],
     );
   }
+
   Column eventHourEndOutput() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -884,6 +967,7 @@ class _NewEventWidgetState extends State<NewEventWidget> {
       ],
     );
   }
+
   Column eventHourStartOutput() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -913,6 +997,7 @@ class _NewEventWidgetState extends State<NewEventWidget> {
       ],
     );
   }
+
   Padding eventDescInput() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -977,17 +1062,21 @@ class _NewEventWidgetState extends State<NewEventWidget> {
     );
   }
 
-  Future<DateTime> _selectedDate(BuildContext context) => showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(Duration(seconds: 1)),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100));
+  Future<DateTime> _selectedDate(BuildContext context, DateTime date) =>
+      showDatePicker(
+          context: context,
+          initialDate: date,
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2100));
 
-  Future<TimeOfDay> _selectedTime(BuildContext context) {
-    final now = DateTime.now();
+  Future<TimeOfDay> _selectedTime(BuildContext context, DateTime date) {
+    final now = date;
     return showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
     );
   }
+
+
+
 }
